@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+	<property>
+		<name>hadoop.security.authentication</name>
+		<value>kerberos</value>
+	</property>
+
+	<property>
+		<name>hadoop.security.authorization</name>
+		<value>true</value>
+	</property>
+
+
+	<property>
+		<name>fs.default.name</name>
+		<value>hdfs://test86.hadoop/</value>
+		<final>true</final>
+	</property>
+	<property>
+		<name>dfs.namenode.kerberos.principal</name>
+		<value>hadoop/test86.hadoop@DIANPING.COM</value>
+	</property>
+
+</configuration>

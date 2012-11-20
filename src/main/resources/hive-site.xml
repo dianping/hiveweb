@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+	<property>
+		<name>hive.hiveserver.kerberos.principal</name>
+		<value>hadoop/test84.hadoop@DIANPING.COM</value>
+	</property>
+	<property>
+		<name>hive.hiveserver.sasl.enabled</name>
+		<value>true</value>
+	</property>
+</configuration>

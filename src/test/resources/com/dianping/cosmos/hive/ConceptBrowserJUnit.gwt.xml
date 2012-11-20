@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <!-- Inherit our applications main module.                      -->
+  <inherits name='com.dianping.cosmos.hive.ConceptBrowser' />
+
+  <!-- Specify the path to any remote services.                   -->
+  <servlet path="/ConceptBrowser/greet" class="com.dianping.cosmos.hive.server.GreetingServiceImpl" />
+
+</module>
