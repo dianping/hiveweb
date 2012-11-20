@@ -1,0 +1,2 @@
+serviceClass: com.dianping.cosmos.hive.client.HiveQueryService
+path: 1341FCF1D9ACC1060939D17467B2F044.gwt.rpc

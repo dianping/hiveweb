@@ -1,0 +1,37 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.container {
+			width: 100%;
+		}
+		.content {
+			width: 200px;
+			margin: 0 auto;
+		}
+	</ui:style>
+	<g:HTMLPanel addStyleNames="{style.content}">
+		<h2>Hive Web Client Login</h2>
+		<g:SimplePanel ui:field="message"></g:SimplePanel>
+		<table>
+			<tr>
+				<td>Username: </td>
+				<td>
+					<g:TextBox ui:field="username"></g:TextBox>
+				</td>
+			</tr>
+			<tr>
+				<td>Password: </td>
+				<td>
+					<g:PasswordTextBox ui:field="password"></g:PasswordTextBox>
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<g:Button ui:field="submit_button" text="login"></g:Button>
+				</td>
+			</tr>
+		</table>
+	</g:HTMLPanel>
+</ui:UiBinder> 

@@ -1,0 +1,51 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client"
+	xmlns:hw='urn:com.dianping.cosmos.hive.client'>
+	<ui:style>
+		.splitPanel {
+			border: 5px solid #AAAAAA;
+			padding: 20px;
+		}
+		.cellTable {
+			border-bottom: 2px solid #ccc;
+			text-align: left;
+			margin-bottom: 4px;
+		}
+		
+		.tableDetail {
+			color: green;
+			background-color: blanchedalmond;
+			font-size: 120%
+		}
+	</ui:style>
+
+	<g:DockLayoutPanel height="600px">
+		<g:center>
+			<g:SplitLayoutPanel addStyleNames='{style.splitPanel}'>
+				<g:west size="200">
+					<g:VerticalPanel ui:field="shortcutPanel" spacing="10">
+						<g:HTMLPanel>
+							<b>Select Database:</b>
+						</g:HTMLPanel>
+						<g:ListBox ui:field="dbListBox" visibleItemCount="1"
+							width="10em" />
+						<g:HTMLPanel>
+							<b>Select Table:</b>
+						</g:HTMLPanel>
+						<g:ListBox ui:field="tableListBox" visibleItemCount="1"
+							width="10em" />
+						<g:Button ui:field="submitBut" text="submit" />
+					</g:VerticalPanel>
+				</g:west>
+				<g:north size="200">
+					<c:CellTable ui:field="tableSchemaTable" pageSize='15' height="100%" width="100%" />
+				</g:north>
+				<g:center size="200">
+					<g:TextArea ui:field='tableDetail' height="100%" width="100%" text="table schema detail" readOnly="true"
+						addStyleNames='{style.tableDetail}' />
+				</g:center>
+			</g:SplitLayoutPanel>
+		</g:center>
+	</g:DockLayoutPanel>
+</ui:UiBinder>
