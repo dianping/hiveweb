@@ -1,0 +1,3 @@
+# Module hivewebrowser
+# RPC service class, partial path of RPC policy file
+com.dianping.cosmos.hive.client.HiveQueryService, 1341FCF1D9ACC1060939D17467B2F044.gwt.rpc

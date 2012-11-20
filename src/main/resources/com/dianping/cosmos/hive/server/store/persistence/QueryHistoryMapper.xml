@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianping.cosmos.hive.server.store.persistence.QueryHistoryMapper">
+
+<!-- 	<resultMap type="QueryHistory" id="QueryHistoryResultMap">
+		<result property="username" column="username" />
+		<result property="hql" column="hql" />
+		<result property="addtime" column="addtime" />
+		<result property="filename" column="filename" />
+	</resultMap> -->
+
+	<select id="selectQueryHistoryByUsername" parameterType="String"
+		resultType="QueryHistory">
+		select username, hql, addtime, filename from
+		HW_QueryHistory where username = #{username} order by id desc
+    </select>
+    
+    <select id="selectLastNQuery" parameterType="int" resultType="String">
+		select hql from HW_QueryHistory order by id desc limit 10
+    </select>
+
+	<insert id="insertQueryHistory"
+		parameterType="QueryHistory">
+	    <![CDATA[
+	    INSERT INTO HW_QueryHistory (username, hql, addtime, filename)
+			VALUES (#{username}, #{hql}, #{addtime}, #{filename})
+		]]>
+	</insert>
+</mapper>
