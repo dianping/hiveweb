@@ -29,7 +29,7 @@ public class FileUpload extends HttpServlet {
 		ServletContext context = this.getServletContext();
 		String path = context.getRealPath("");
 
-		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+//		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 
 		FileItemFactory factory = new DiskFileItemFactory();
 
