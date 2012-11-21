@@ -2,7 +2,6 @@ package com.dianping.cosmos.hive.server.queryengine.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dianping.cosmos.hive.server.HiveJdbcClient;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryInput;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryOutput;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;

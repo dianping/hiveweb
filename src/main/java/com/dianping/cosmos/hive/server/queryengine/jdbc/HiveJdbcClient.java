@@ -1,6 +1,5 @@
-package com.dianping.cosmos.hive.server;
+package com.dianping.cosmos.hive.server.queryengine.jdbc;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -26,8 +25,7 @@ import com.google.common.cache.RemovalNotification;
 public class HiveJdbcClient {
 	private static final Log logger = LogFactory.getLog(HiveJdbcClient.class);
 
-	private static final int USER_SHOW_ROW_MAXIMUM_NUMBER = 300;
-	private static final int FILE_STORE_ROW_MAXIMUM_NUMBER = 100000;
+	private static final int USER_SHOW_ROW_MAXIMUM_COUNT = 300;
 
 	private static String driverName = "org.apache.hadoop.hive.jdbc.HiveDriver";
 
@@ -48,7 +46,7 @@ public class HiveJdbcClient {
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException cfe) {
-			logger.error("Hive Driver Not Found", cfe);
+			logger.error("Hive Driver Not Found " + driverName, cfe);
 		}
 	}
 
@@ -96,7 +94,7 @@ public class HiveJdbcClient {
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("getTables failed", e);
 		}
 		return tables;
 	}
@@ -115,13 +113,16 @@ public class HiveJdbcClient {
 				tsb.setFieldName(rs.getString(1));
 				tsb.setFieldType(rs.getString(2));
 				tsb.setFieldComment(rs.getString(3));
-				logger.info(tsb);
+
+				if (logger.isDebugEnabled()) {
+					logger.debug("getTableSchema " + tsb);
+				}
 				tsbs.add(tsb);
 			}
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("getTableSchema failed", e);
 		}
 		return tsbs;
 	}
@@ -129,13 +130,11 @@ public class HiveJdbcClient {
 	public String getTableSchemaDetail(String tokenid, String database,
 			String table) {
 		Connection conn = connCache.getIfPresent(tokenid);
-		StringBuilder sb = new StringBuilder(400);
+		StringBuilder sb = new StringBuilder(500);
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			logger.info("execute " + "use " + database);
 			stmt.execute("use " + database);
-			stmt.executeQuery("use " + database);
 			ResultSet rs = stmt.executeQuery("desc formatted " + table);
 			ResultSetMetaData rsm = rs.getMetaData();
 			int columnCount = rsm.getColumnCount();
@@ -152,13 +151,16 @@ public class HiveJdbcClient {
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
-			logger.error(String.format("tokenid:{0},database:{1},table:{2}",
-					tokenid, database, table), e);
+			logger.error(
+					String.format(
+							"getTableSchemaDetail failed , tokenid:%s, database:%s, table:%s",
+							tokenid, database, table), e);
 		}
 		return sb.toString();
 
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	public String getQueryPlan(String tokenid, String hql, String database) {
 		Connection conn = connCache.getIfPresent(tokenid);
 		StringBuilder sb = new StringBuilder(500);
@@ -166,33 +168,37 @@ public class HiveJdbcClient {
 		try {
 			stmt = conn.createStatement();
 			stmt.executeQuery("use " + database);
-			
+
 			stmt.setFetchSize(Integer.MAX_VALUE);
 			ResultSet rs = stmt.executeQuery("explain " + hql);
-			if (rs.next()){
+			if (rs.next()) {
 				Object value = ReflectUtils.getFieldValue(rs, "fetchedRows");
 				List<String> fetchedRows = (List<String>) value;
-				if (fetchedRows != null || fetchedRows.size() > 0){
+				if (fetchedRows == null || fetchedRows.size() == 0) {
+					sb.append("something wrong with hive query");
+				} else {
 					for (String row : fetchedRows) {
 						sb.append(row).append("\n");
 					}
-				}else {
-					sb.append("something wrong with hive query");
 				}
+			} else {
+				logger.error("execute 'explain hql' failed, hql:" + hql);
 			}
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
 			sb.append(e.toString());
-			logger.error("db:" + database + " hql:" + hql, e);
+			logger.error("getQueryPlan failed, dbname:" + database + " hql:"
+					+ hql, e);
 		}
-		logger.info("db:" + database + " query plan for hql:" + hql + " is " + sb.toString());
+		logger.info("dbname:" + database + " query plan for hql:" + hql
+				+ " is " + sb.toString());
 		return sb.toString();
 	}
-	
+
 	public HiveQueryOutput getQueryResult(String tokenid, String username,
-			String database, String hql, int resultLimit,
-			Boolean isStoreFile, long timestamp) {
+			String database, String hql, int resultLimit, Boolean isStoreFile,
+			long timestamp) {
 		HiveQueryOutput res = new HiveQueryOutput();
 		Connection conn = connCache.getIfPresent(tokenid);
 
@@ -219,22 +225,28 @@ public class HiveJdbcClient {
 			}
 
 			res.setTitleList(columnNames);
-			int maxReturnRow = resultLimit < USER_SHOW_ROW_MAXIMUM_NUMBER ? resultLimit
-					: USER_SHOW_ROW_MAXIMUM_NUMBER;
-			int currentRow = 1;
-			while (rs.next()) {
-				List<String> oneRowData = new ArrayList<String>();
-				if (currentRow > FILE_STORE_ROW_MAXIMUM_NUMBER) {
-					break;
-				} else {
+			int maxShowRowCount = resultLimit < USER_SHOW_ROW_MAXIMUM_COUNT ? resultLimit
+					: USER_SHOW_ROW_MAXIMUM_COUNT;
+			int currentRow = 0;
+			
+			
+			String storeFilePath = "";
+			if (isStoreFile){
+				storeFilePath = DataFileStore.getStoreFilePath(tokenid, username, database, hql, timestamp);
+			}
+			logger.info("isStoreFile" + isStoreFile + " storeFilePath" + storeFilePath);
+			
+			while (rs.next() && currentRow < DataFileStore.FILE_STORE_LINE_LIMIT) {
+				if (currentRow < maxShowRowCount) {
+					List<String> oneRowData = new ArrayList<String>();
 					for (int i = 1; i <= columnCount; i++) {
-						if (currentRow <= maxReturnRow) {
-							oneRowData.add(rs.getString(i));
-						}
-					}
+						oneRowData.add(rs.getString(i));
+					}					
+					res.addRow(oneRowData);
+				}else if (!isStoreFile){
+					break;
 				}
 				currentRow++;
-				res.addRow(oneRowData);
 			}
 			rs.close();
 			stmt.close();

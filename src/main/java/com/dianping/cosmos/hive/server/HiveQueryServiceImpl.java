@@ -18,6 +18,7 @@ import com.dianping.cosmos.hive.client.service.HiveQueryService;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryInput;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryOutput;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
+import com.dianping.cosmos.hive.server.queryengine.jdbc.HiveJdbcClient;
 import com.dianping.cosmos.hive.server.store.domain.QueryHistory;
 import com.dianping.cosmos.hive.server.store.service.QueryHistoryService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;

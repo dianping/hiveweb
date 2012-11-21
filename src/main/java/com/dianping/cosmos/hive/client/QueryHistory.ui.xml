@@ -4,24 +4,15 @@
 	xmlns:hw='urn:com.dianping.cosmos.hive.client'>
 	<ui:style>
 		.cellTable {
-			border-bottom: 5px solid #ccc;
+			border-bottom: 2px solid #ccc;
 			text-align: left;
-			margin-bottom: 4px;
+			margin-bottom: 5px;
+			white-space: nowrap;
 		}
 	</ui:style>
-	<g:HTMLPanel>
-		<table cellspacing='1' cellpadding='1' style='width:100%;'>
-			<tr>
-				<td valign='top'>
-					<c:CellTable addStyleNames='{style.cellTable}'
-						pageSize='15' ui:field='cellTable' />
-				</td>
-			</tr>
-			<tr>
-				<td align='center'>
-					<c:SimplePager ui:field='pager' />
-				</td>
-			</tr>
-		</table>
-	</g:HTMLPanel>
+	<g:VerticalPanel width="100%">
+		<c:CellTable addStyleNames='{style.cellTable}' pageSize='15'
+			ui:field='cellTable' />
+		<c:SimplePager ui:field='pager' />
+	</g:VerticalPanel>
 </ui:UiBinder>

@@ -28,7 +28,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-@UrlPatternEntryPoint("QueryHistory.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
+@UrlPatternEntryPoint("queryhistory.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
 public class QueryHistory extends LoginComponent implements EntryPoint {
 	private static QueryHistoryUiBinder uiBinder = GWT
 			.create(QueryHistoryUiBinder.class);
@@ -80,7 +80,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 	}
 
 	private void initialize() {
-		cellTable = new CellTable<QueryHistoryBo>(15);
+		cellTable = new CellTable<QueryHistoryBo>();
 		cellTable.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		cellTable.setWidth("100%", true);
 
@@ -134,9 +134,9 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				});
 		cellTable.addColumn(downloadColumn, "Download File");
 
-		cellTable.setColumnWidth(usernameColumn, "15%");
-		cellTable.setColumnWidth(addtimeColumn, "20%");
-		cellTable.setColumnWidth(hqlColumn, "50%");
+		cellTable.setColumnWidth(usernameColumn, "10%");
+		cellTable.setColumnWidth(addtimeColumn, "10%");
+		cellTable.setColumnWidth(hqlColumn, "65%");
 		cellTable.setColumnWidth(downloadColumn, "15%");
 
 		SimplePager.Resources pagerResources = GWT

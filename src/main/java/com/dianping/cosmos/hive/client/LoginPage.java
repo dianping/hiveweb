@@ -29,9 +29,6 @@ public class LoginPage implements EntryPoint {
 
 	private static final int COOKIE_TIMEOUT = 1000 * 60 * 60 * 12;
 
-	public static String TOKEN_ID = "";
-	public static String USER_NAME = "";
-
 	interface LoginViewUiBinder extends UiBinder<Widget, LoginPage> {
 	}
 

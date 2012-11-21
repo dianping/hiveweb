@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
-@UrlPatternEntryPoint("TableSchema.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
+@UrlPatternEntryPoint("tableschema.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
 public class TableSchema extends LoginComponent implements EntryPoint {
 	private static TableSchemaUiBinder uiBinder = GWT
 			.create(TableSchemaUiBinder.class);
@@ -88,7 +88,7 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	}
 
 	private void initialize() {
-		tableSchemaTable = new CellTable<TableSchemaBo>(10, GWT.<TableResources> create(TableResources.class));
+		tableSchemaTable = new CellTable<TableSchemaBo>(15, GWT.<TableResources> create(TableResources.class));
 		tableSchemaTable
 				.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		TextColumn<TableSchemaBo> fieldNameColumn = new TextColumn<TableSchemaBo>() {
