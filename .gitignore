@@ -6,7 +6,6 @@ bin/
 .metadata/
 .gwt/
 classes/
-lib/
 
 # Compiled source #
 ###################
