@@ -24,7 +24,7 @@ import org.apache.hadoop.security.UserGroupInformation.AuthenticationMethod;
 public class Krb5Login {
 	private static final Log logger = LogFactory.getLog(Krb5Login.class);
 	
-	private static String S_CONFIG_NAME = "krb5";
+	//private static String S_CONFIG_NAME = "krb5";
 	private static org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
 	
 	static {
