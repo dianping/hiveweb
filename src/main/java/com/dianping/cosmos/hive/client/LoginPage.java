@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
@@ -71,6 +72,10 @@ public class LoginPage implements EntryPoint {
 									} else {
 										setCookies(u, result.getTokenid(),
 												result.getAddtime());
+										String link = "/home.html?gwt.codesvr=127.0.0.1:9997";
+										Window.Location.assign(link); 
+										System.out.println(link);
+										//Window.open(link, "_self", "");
 										//redirect2("home.html?gwt.codesvr=127.0.0.1:9997");
 										//redirect("home.html?gwt.codesvr=127.0.0.1:9997");
 									}

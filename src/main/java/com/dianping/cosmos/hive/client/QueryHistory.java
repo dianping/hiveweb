@@ -117,19 +117,29 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 		Column<QueryHistoryBo, String> downloadColumn = new Column<QueryHistoryBo, String>(
 				downloadButton) {
 			public String getValue(QueryHistoryBo o) {
-				return "Download";
+				String fileLocation = o.getFilename();
+				
+				if (fileLocation == null || fileLocation.equals("")){
+					return "Not Store";
+				}else {
+					return "Download";
+				}
 			}
 		};
 
 		downloadColumn
 				.setFieldUpdater(new FieldUpdater<QueryHistoryBo, String>() {
-
 					@Override
 					public void update(int index, QueryHistoryBo object,
 							String value) {
-						GWT.log("Downloading " + object.getFilename());
-						String link = GWT.getModuleBaseURL() + "myfiledownload";
-						Window.open(link + "/filedd.txt", "_blank", "");
+						String fileLocation = object.getFilename();
+						GWT.log("Downloading " + fileLocation);
+						if (fileLocation != null && fileLocation.indexOf('/') > 0){
+							String fileName = fileLocation.substring(fileLocation.lastIndexOf('/') + 1);
+							System.out.println(fileName);
+							String link = GWT.getModuleBaseURL() + "myfiledownload/" + fileName;
+							Window.open(link, "_blank", "");
+						}
 					}
 				});
 		cellTable.addColumn(downloadColumn, "Download File");

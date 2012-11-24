@@ -1,17 +1,24 @@
 package com.dianping.cosmos.hive.server.queryengine.jdbc;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ResourceBundle;
-import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionOutputStream;
+import org.apache.hadoop.util.ReflectionUtils;
 
 public class DataFileStore {
 	private static final Log logger = LogFactory.getLog(DataFileStore.class);
@@ -21,6 +28,9 @@ public class DataFileStore {
 
 	public static String FILE_STORE_DIRECTORY_LOCATION;
 	public static int FILE_STORE_LINE_LIMIT;
+	public final static String DEFAULT_CODEC_CLASS = "org.apache.hadoop.io.compress.GzipCodec";
+	public final static int BUFFER_SIZE = 8 * 1024;
+	private final static String ENCODING = "UTF-8";
 
 	static {
 		ResourceBundle bundle = ResourceBundle.getBundle("context");
@@ -53,21 +63,34 @@ public class DataFileStore {
 		return val;
 	}
 
-	public static OutputStream openOutputStream(File file, boolean gzip)
-			throws IOException {
-		if (file.exists()) {
-			logger.info("file " + file + "exists, hiveweb now delete it");
-			if (file.delete()) {
-				logger.info("successfully delete file " + file);
-			} else {
-				logger.error("failed to delete file " + file);
-			}
+	public static BufferedWriter openOutputStream(String file)
+			throws IOException{
+		Configuration conf = new Configuration();
+		URI uri = null;
+		try {
+			uri = new URI(file);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("file:" + file, e);
 		}
-		file.createNewFile();
-		if (gzip) {
-			return new GZIPOutputStream(new FileOutputStream(file));
+		FileSystem fs = FileSystem.get(uri, conf);
+
+		Class<?> codecClass = null;
+		try {
+			codecClass = Class.forName(DEFAULT_CODEC_CLASS);
+		} catch (ClassNotFoundException e) {
+			logger.error(DEFAULT_CODEC_CLASS + " not found", e);
 		}
-		return new FileOutputStream(file);
+		CompressionCodec codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass, conf);
+		
+		if (logger.isDebugEnabled()){
+			logger.debug("reflection using compression codec class: " + codec.getClass().getName());
+		}
+		FSDataOutputStream out = fs.create(new Path(file), false, BUFFER_SIZE);
+		CompressionOutputStream co = codec.createOutputStream(out);
+		BufferedWriter bw = new BufferedWriter(
+				new OutputStreamWriter(co, ENCODING), BUFFER_SIZE);
+		
+		return bw;
 	}
 	
 	public static String getStoreFilePath(String tokenid, String username,

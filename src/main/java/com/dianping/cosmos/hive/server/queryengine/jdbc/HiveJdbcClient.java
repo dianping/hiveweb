@@ -1,5 +1,6 @@
 package com.dianping.cosmos.hive.server.queryengine.jdbc;
 
+import java.io.BufferedWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -199,7 +201,7 @@ public class HiveJdbcClient {
 	public HiveQueryOutput getQueryResult(String tokenid, String username,
 			String database, String hql, int resultLimit, Boolean isStoreFile,
 			long timestamp) {
-		HiveQueryOutput res = new HiveQueryOutput();
+		HiveQueryOutput hqo = new HiveQueryOutput();
 		Connection conn = connCache.getIfPresent(tokenid);
 
 		Statement stmt;
@@ -224,35 +226,62 @@ public class HiveJdbcClient {
 				logger.debug("resultset meta data is:" + sb.toString());
 			}
 
-			res.setTitleList(columnNames);
+			hqo.setTitleList(columnNames);
 			int maxShowRowCount = resultLimit < USER_SHOW_ROW_MAXIMUM_COUNT ? resultLimit
 					: USER_SHOW_ROW_MAXIMUM_COUNT;
 			int currentRow = 0;
 			
 			
 			String storeFilePath = "";
+			BufferedWriter bw = null;
 			if (isStoreFile){
 				storeFilePath = DataFileStore.getStoreFilePath(tokenid, username, database, hql, timestamp);
+				bw = DataFileStore.openOutputStream(storeFilePath);
 			}
-			logger.info("isStoreFile" + isStoreFile + " storeFilePath" + storeFilePath);
+			logger.info("isStoreFile:" + isStoreFile + " storeFilePath:" + storeFilePath);
+			
+			if (!StringUtils.isBlank(storeFilePath)){
+				hqo.setStoreFileLocation(storeFilePath);
+			}
 			
 			while (rs.next() && currentRow < DataFileStore.FILE_STORE_LINE_LIMIT) {
 				if (currentRow < maxShowRowCount) {
 					List<String> oneRowData = new ArrayList<String>();
 					for (int i = 1; i <= columnCount; i++) {
 						oneRowData.add(rs.getString(i));
-					}					
-					res.addRow(oneRowData);
-				}else if (!isStoreFile){
+						
+						if (isStoreFile){
+							bw.write(rs.getString(i));
+							if (i < columnCount)
+								bw.write('\t');
+						}
+					}		
+					hqo.addRow(oneRowData);
+					
+					if (isStoreFile){
+						bw.write('\n');
+					}
+				}else if (isStoreFile){
+					for (int i = 1; i <= columnCount; i++) {
+						bw.write(rs.getString(i));
+						if (i < columnCount)
+							bw.write('\t');
+					}
+					bw.write('\n');
+				}else {
 					break;
 				}
 				currentRow++;
 			}
+			if (isStoreFile && bw != null) {
+				bw.flush();
+				IOUtils.closeQuietly(bw);
+			}
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
-			logger.error("db:" + database + " hql:" + hql, e);
+			logger.error("getQueryResult failed, db:" + database + " hql:" + hql, e);
 		}
-		return res;
+		return hqo;
 	};
 }

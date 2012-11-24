@@ -68,21 +68,18 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		HiveQueryOutput result = queryEngine.getQueryResult(new HiveQueryInput(
 				input));
 		// insert query history DB
-		String resultLocation = null;
-		if (result != null) {
-			resultLocation = queryEngine.getQueryOutputLocation(
-					input.getUsername(), input.getTimestamp());
+		String resultLocation = "";
+		if (result.getStoreFileLocation() != null){
+			resultLocation = result.getStoreFileLocation(); 
 		}
+		
 		QueryHistory history = new QueryHistory();
 		history.setHql(input.getHql());
 		history.setUsername(input.getUsername());
 		history.setAddtime(new Date(input.getTimestamp()));
-		if (resultLocation != null) {
-			history.setFilename(resultLocation);
-		}
+		history.setFilename(resultLocation);
 		queryHistoryService.insertQueryHistory(history);
-		if (result == null)
-			return null;
+		
 		return result.toHiveQueryOutputBo();
 	}
 
