@@ -24,6 +24,7 @@ public class QueryHistoryService {
 		
 		if (logger.isDebugEnabled()){
 			logger.debug("username:" + username + " total query history list size is:" + queryHistoryList.size());
+			
 			for (QueryHistory queryHistory : queryHistoryList) {
 				logger.debug(queryHistory);
 			}
@@ -34,7 +35,7 @@ public class QueryHistoryService {
 	@Transactional
     public void insertQueryHistory(QueryHistory qh){
 		if (logger.isDebugEnabled()){
-			
+			logger.debug(qh);
 		}
 		
 		queryHistoryMapper.insertQueryHistory(qh);

@@ -6,7 +6,6 @@ bin/
 .metadata/
 .gwt/
 classes/
-lib/
 
 # Compiled source #
 ###################
@@ -25,7 +24,6 @@ lib/
 *.dmg
 *.gz
 *.iso
-*.jar
 *.rar
 *.tar
 *.zip
@@ -78,7 +76,6 @@ Thumbs.db
 *.class
 
 # Package Files #
-*.jar
 *.war
 
 # gwt caches and compiled units #

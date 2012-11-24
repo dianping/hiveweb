@@ -67,6 +67,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 			return null;
 		HiveQueryOutput result = queryEngine.getQueryResult(new HiveQueryInput(
 				input));
+		
 		// insert query history DB
 		String resultLocation = "";
 		if (result.getStoreFileLocation() != null){
