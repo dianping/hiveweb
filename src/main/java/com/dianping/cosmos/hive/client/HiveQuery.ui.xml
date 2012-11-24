@@ -7,16 +7,27 @@
 			border-bottom: 2px solid #ccc;
 			text-align: left;
 			margin-bottom: 5px;
+			white-space: nowrap;
 		}
+		
+		.hqlTextArea {
+			width: 570px;
+			padding: 5px;
+			border: 3px solid #ccc;
+			border-top: 1px solid #666;
+			font-size: 150%;
+			background-color: oldlace;
+		}
+		
 		.progressTextArea {
-			color: green;
-			background-color: blanchedalmond;
-			width: 520px;
-			height: 160px;
+			color: #884D10;
+			background-color: #DDDBD9;
+			width: 530px;
+			height: 200px;
 		}
 	</ui:style>
-	<g:VerticalPanel spacing='5'>
-		<g:HorizontalPanel spacing="10">
+	<g:VerticalPanel spacing='3'>
+		<g:HorizontalPanel spacing="5">
 			<g:FlowPanel>
 				<g:HorizontalPanel>
 					<g:HTMLPanel>
@@ -27,29 +38,20 @@
 				<g:HTMLPanel>
 					Please write your hive query:
 				</g:HTMLPanel>
-				<g:TextArea ui:field="hqlTextArea" visibleLines="5"/>
+				<g:TextArea ui:field="hqlTextArea" visibleLines="6"
+					styleName="{style.hqlTextArea}" />
 				<g:HorizontalPanel spacing='5'>
 					<g:CheckBox ui:field="isStoreFile" text="Store To File" />
-					<g:Button ui:field="submitBut" text="submit" width="100px"/>
-					<g:Button ui:field="submitQPBut" text="Query Plan" width="120px"/>
+					<g:Button ui:field="submitBut" text="submit" width="100px" />
+					<g:Button ui:field="submitQPBut" text="Query Plan" width="120px" />
 				</g:HorizontalPanel>
 			</g:FlowPanel>
-			<g:TextArea ui:field="progressTextArea" styleName="{style.progressTextArea}" />
+			<g:TextArea ui:field="progressTextArea" text="Query Plan"
+				styleName="{style.progressTextArea}" />
 		</g:HorizontalPanel>
-		<g:HTMLPanel>
-			<table cellspacing='0' cellpadding='0' style='width:100%;'>
-				<tr>
-					<td valign='top'>
-						<c:CellTable addStyleNames='{style.cellTable}'
-							pageSize='15' ui:field='cellTable' />
-					</td>
-				</tr>
-				<tr>
-					<td align='center'>
-						<c:SimplePager ui:field='pager' />
-					</td>
-				</tr>
-			</table>
-		</g:HTMLPanel>
+		<g:VerticalPanel width="100%">
+			<c:CellTable addStyleNames='{style.cellTable}' pageSize='15' ui:field='cellTable' />
+			<c:SimplePager ui:field='pager' />
+		</g:VerticalPanel>
 	</g:VerticalPanel>
 </ui:UiBinder>

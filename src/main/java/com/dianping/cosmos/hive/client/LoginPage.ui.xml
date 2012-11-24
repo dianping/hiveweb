@@ -6,12 +6,12 @@
 			width: 100%;
 		}
 		.content {
-			width: 200px;
+			width: 250px;
 			margin: 0 auto;
 		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames="{style.content}">
-		<h2>Hive Web Client Login</h2>
+		<h2>Hive Web Login</h2>
 		<g:SimplePanel ui:field="message"></g:SimplePanel>
 		<table>
 			<tr>

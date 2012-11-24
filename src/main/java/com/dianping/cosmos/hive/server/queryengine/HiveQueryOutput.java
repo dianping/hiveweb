@@ -10,9 +10,19 @@ public class HiveQueryOutput{
 	private List<String> titleList;
 	
 	private List<List<String>> rowList = new ArrayList<List<String>>();
+	
+	private String storeFileLocation;
 
 	public List<String> getTitleList() {
 		return titleList;
+	}
+	
+	public String getStoreFileLocation(){
+		return this.storeFileLocation;
+	}
+	
+	public void setStoreFileLocation(String fileLocation){
+		this.storeFileLocation = fileLocation;
 	}
 
 	public void setTitleList(List<String> titleList) {

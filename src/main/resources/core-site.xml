@@ -4,6 +4,11 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+	<property>
+		<name>io.compression.codecs</name>
+		<value>org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec,com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec,org.apache.hadoop.io.compress.BZip2Codec
+		</value>
+	</property>
 
 	<property>
 		<name>hadoop.security.authentication</name>

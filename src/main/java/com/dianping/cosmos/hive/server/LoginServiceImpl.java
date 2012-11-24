@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.dianping.cosmos.hive.client.bo.LoginTokenBo;
 import com.dianping.cosmos.hive.client.service.LoginService;
+import com.dianping.cosmos.hive.server.queryengine.jdbc.HiveJdbcClient;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;

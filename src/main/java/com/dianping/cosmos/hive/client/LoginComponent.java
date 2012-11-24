@@ -32,6 +32,7 @@ public class LoginComponent {
 	public void cleanup() {
 		Window.alert("login failed");
 		LoginPage.removeCookies();
+		redirect("index.html");
 	}
 
 	public native void redirect(String URL)

@@ -6,62 +6,20 @@ body {
 	text-align: center;
 }
 
-html,body,p,div,table {
+html, body, p, div{
 	font-family: Tahoma, Geneva, sans-serif;
-	font-size: 14px;
-}
-
-.background_gray {
-	background-color: #ccccc;
-	margin: 0;
 }
 
 p {
 	margin: 1em;
 	font-family: Tahoma, Geneva, sans-serif;
-	font-size: 12px;
+	font-size: 14px;
 	text-align: justify;
 }
 
 a {
 	color: #03C;
 	text-decoration: none;
-}
-
-a:hover {
-	color: #acd373;
-	text-decoration: none;
-}
-/* jpb */
-a:active {
-	color: #acd373;
-	/* background-color:#FFE766;
-	   text-decoration:underline; jpb */
-	text-decoration: none;
-}
-
-#header {
-	width: 100%;
-	background-image: url(./img/header_bg.png);
-	height: 30px;
-	background-repeat: repeat-x;
-	margin: 0;
-	padding: 0;
-}
-
-#header table td {
-	margin: 0 5px;
-	color: white;
-}
-
-#header a {
-	color: #FFF;
-	font-size: 12px;
-}
-
-#header a:hover {
-	color: #009;
-	text-decoration: underline;
 }
 
 #footer {
@@ -84,30 +42,21 @@ a:active {
 }
 
 #logo {
-	height: 110px;
-}
-
-#logo .logo_img {
-	border-right: #CCC 1px solid;
-	margin-left: 30px;
-	float: left;
+	height: 90px;
 }
 
 #logo h1 {
+	height: 30px;
 	font-size: large;
 	text-align: left;
-	margin-left: 10px;
-	color: #999;
+	margin-left: 100px;
+	color: #567;
 	font-weight: 800;
-}
-
-#logo h1 span {
-	color: #efb81f;
 }
 
 #tab {
 	text-align: center;
-	width: 695px;
+	width: 1200px;
 	float: left;
 	height: 90px;
 	padding: 0;
@@ -115,14 +64,14 @@ a:active {
 
 #tab ul {
 	position: relative;
-	bottom: -28px;
+	bottom: 0px;
 	margin-top: 0;
 }
 
 #tab ul li {
 	display: inline;
 	list-style: none;
-	font-size: 16px;
+	font-size: 18px;
 }
 
 #tab ul li a {
@@ -137,7 +86,7 @@ a:active {
 	background-image: url(./img/tab.jpg);
 	background-repeat: no-repeat;
 	color: white;
-	font-weight: 500;
+	font-weight: 600;
 }
 
 #tab ul li a:hover {
@@ -148,18 +97,30 @@ a:active {
 	background-image: url(./img/tab_selected.png);
 	background-repeat: no-repeat;
 	position: relative;
-	bottom: -1px;
+	bottom: 0px;
 	color: #000;
-	z-index: 1;
+	z-index: 6;
 }
 
-.gwt-TextArea {
-	width: 600px;
-	padding: 4px;
-	border: 3px solid #ccc;
-	border-top: 1px solid #666;
-	font-size: 150%;
-	font-family: Arial Unicode MS, Arial, sans-serif;
+
+#home h1 {
+	font-size: 20px;
+	font-weight: 600;
+	border-bottom: #CCC 2px solid;
+	margin: 10px 10px 10px 10px;
+	padding-left: 5px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	background-image: url(./img/hive_icon.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+}
+
+.caption {
+	border: 2px #ccc solid;
+	margin-bottom: 15px;
+	font-size: 15px;
+	padding: 8px;
 }
 
 .gwt-DialogBox {
