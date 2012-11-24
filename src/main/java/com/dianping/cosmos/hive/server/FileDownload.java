@@ -12,19 +12,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dianping.cosmos.hive.server.queryengine.jdbc.DataFileStore;
+
 public class FileDownload extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	private static final String DOWNLOAD_DIRECTORY = "/data/hive-web-download-data";
 
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out
-				.println("-------------------\n-----------\n-----------\n----------");
-
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		
+		
 		String filename = URLDecoder.decode(request.getPathInfo(), "UTF-8");
-		File file = new File(DOWNLOAD_DIRECTORY, filename);
+		File file = new File(DataFileStore.FILE_STORE_DIRECTORY_LOCATION, filename);
 		response.setContentType("application/x-download");
 		response.setHeader("Content-Disposition", "attachment; filename="
 				+ filename);
@@ -54,5 +59,4 @@ public class FileDownload extends HttpServlet {
 				}
 		}
 	}
-
 }

@@ -9,8 +9,6 @@ import com.dianping.cosmos.hive.client.service.LoginServiceAsync;
 import com.dianping.cosmos.hive.shared.util.StringUtils;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -18,7 +16,6 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 //@UrlPatternEntryPoint(value = "home.html")
@@ -31,7 +28,6 @@ public class HomePage extends LoginComponent implements EntryPoint {
 	private CaptionPanel queryHistoryCap;
 
 	private CaptionPanel descStmt;
-	private TextBox queryBox;
 
 	private HIVEMessages messages = (HIVEMessages) GWT
 			.create(HIVEMessages.class);
@@ -46,23 +42,24 @@ public class HomePage extends LoginComponent implements EntryPoint {
 		if (getTokenid() == null || getTokenid().equals("")) {
 			cleanup();
 		} else {
-			loginService.isAuthenticated(getTokenid(), new AsyncCallback<Boolean>() {
+			loginService.isAuthenticated(getTokenid(),
+					new AsyncCallback<Boolean>() {
 
-				@Override
-				public void onSuccess(Boolean result) {
-					if (result == true) {
-						initialize();
-					} else {
-						cleanup();
-					}
-				}
+						@Override
+						public void onSuccess(Boolean result) {
+							if (result == true) {
+								initialize();
+							} else {
+								cleanup();
+							}
+						}
 
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-					cleanup();
-				}
-			});
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+							cleanup();
+						}
+					});
 		}
 	}
 
