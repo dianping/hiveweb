@@ -31,12 +31,6 @@ public class JdbcQueryEngine implements IQueryEngine {
 		return null;
 	}
 
-	// using another way to create unique file identify
-	@Override
-	public String getQueryOutputLocation(String username, long timestamp) {
-		return null;
-	}
-
 	// can't stop query via jdbc
 	@Override
 	public void stopQuery(String username, long timestamp) {

@@ -109,14 +109,6 @@ public class HiveCmdLineQueryEngine implements IQueryEngine{
 	}
 
 	@Override
-	public String getQueryOutputLocation(String username, long timestamp) {
-		String resultLocation = getResultLocation(username, timestamp);
-		if((new File(resultLocation)).exists())
-			return resultLocation;
-		return null;
-	}
-
-	@Override
 	public void stopQuery(String username, long timestamp) {
 		//stop process
 		String key = getKey(username, timestamp);
