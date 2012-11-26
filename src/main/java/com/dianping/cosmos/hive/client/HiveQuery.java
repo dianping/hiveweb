@@ -21,7 +21,6 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -32,7 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 
-@UrlPatternEntryPoint("HiveQuery.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
+@UrlPatternEntryPoint("hivequery.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
 public class HiveQuery extends LoginComponent implements EntryPoint {
 	private static HiveQueryUiBinder uiBinder = GWT
 			.create(HiveQueryUiBinder.class);
@@ -231,8 +230,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 
 		SimplePager.Resources pagerResources = GWT
 				.create(SimplePager.Resources.class);
-		pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0,
-				true);
+		pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
 		pager.setDisplay(cellTable);
 
 		cusDialog = new CustomDialogBox("text");
@@ -250,13 +248,6 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 			indexedColumns.add(col);
 			cellTable.addColumn(col, headers[i]);
 		}
-		
-//		cellTable.addColumn(col0, "guid");
-//		cellTable.addColumn(col1, "user_id");
-//		cellTable.addColumn(col2, "host");
-//		cellTable.addColumn(col3, "user_ip");
-//		cellTable.addColumn(col4, "city");
-//		cellTable.addColumn(col5, "source");
 
 		for (int i = 0; i < 30; i++) {
 			data.add(new String[] { "0000097d-eecd-4b35-88d0-e344c9f06d35",

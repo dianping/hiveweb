@@ -2,7 +2,6 @@ package com.dianping.cosmos.hive.server.queryengine.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dianping.cosmos.hive.server.HiveJdbcClient;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryInput;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryOutput;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
@@ -26,21 +25,21 @@ public class JdbcQueryEngine implements IQueryEngine {
 				resultLimit, isStoreFile, timestamp);
 	}
 
+	// under the current status, it can't get the query status via hive jdbc
 	@Override
 	public String getQueryStatus(String username, long timestamp) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
+	// using another way to create unique file identify
 	@Override
 	public String getQueryOutputLocation(String username, long timestamp) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
+	// can't stop query via jdbc
 	@Override
 	public void stopQuery(String username, long timestamp) {
-		// TODO Auto-generated method stub
 	}
 
 }

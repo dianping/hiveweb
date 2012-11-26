@@ -28,7 +28,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-@UrlPatternEntryPoint("QueryHistory.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
+@UrlPatternEntryPoint("queryhistory.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
 public class QueryHistory extends LoginComponent implements EntryPoint {
 	private static QueryHistoryUiBinder uiBinder = GWT
 			.create(QueryHistoryUiBinder.class);
@@ -80,7 +80,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 	}
 
 	private void initialize() {
-		cellTable = new CellTable<QueryHistoryBo>(15);
+		cellTable = new CellTable<QueryHistoryBo>();
 		cellTable.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		cellTable.setWidth("100%", true);
 
@@ -117,26 +117,36 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 		Column<QueryHistoryBo, String> downloadColumn = new Column<QueryHistoryBo, String>(
 				downloadButton) {
 			public String getValue(QueryHistoryBo o) {
-				return "Download";
+				String fileLocation = o.getFilename();
+				
+				if (fileLocation == null || fileLocation.equals("")){
+					return "Not Store";
+				}else {
+					return "Download";
+				}
 			}
 		};
 
 		downloadColumn
 				.setFieldUpdater(new FieldUpdater<QueryHistoryBo, String>() {
-
 					@Override
 					public void update(int index, QueryHistoryBo object,
 							String value) {
-						GWT.log("Downloading " + object.getFilename());
-						String link = GWT.getModuleBaseURL() + "myfiledownload";
-						Window.open(link + "/filedd.txt", "_blank", "");
+						String fileLocation = object.getFilename();
+						GWT.log("Downloading " + fileLocation);
+						if (fileLocation != null && fileLocation.indexOf('/') > 0){
+							String fileName = fileLocation.substring(fileLocation.lastIndexOf('/') + 1);
+							System.out.println(fileName);
+							String link = GWT.getModuleBaseURL() + "myfiledownload/" + fileName;
+							Window.open(link, "_blank", "");
+						}
 					}
 				});
 		cellTable.addColumn(downloadColumn, "Download File");
 
-		cellTable.setColumnWidth(usernameColumn, "15%");
-		cellTable.setColumnWidth(addtimeColumn, "20%");
-		cellTable.setColumnWidth(hqlColumn, "50%");
+		cellTable.setColumnWidth(usernameColumn, "10%");
+		cellTable.setColumnWidth(addtimeColumn, "10%");
+		cellTable.setColumnWidth(hqlColumn, "65%");
 		cellTable.setColumnWidth(downloadColumn, "15%");
 
 		SimplePager.Resources pagerResources = GWT
