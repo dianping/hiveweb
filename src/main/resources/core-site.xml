@@ -20,7 +20,6 @@
 		<value>true</value>
 	</property>
 
-
 	<property>
 		<name>fs.default.name</name>
 		<value>hdfs://test86.hadoop/</value>

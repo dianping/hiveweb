@@ -87,19 +87,6 @@ public class LoginPage extends LoginComponent implements EntryPoint {
 	}
 
 	private void bind() {
-		
-//		Event.addNativePreviewHandler(new NativePreviewHandler() {
-//			
-//			@Override
-//			public void onPreviewNativeEvent(NativePreviewEvent event) {
-//				NativeEvent ne = event.getNativeEvent();
-//				int keyPress = ne.getCharCode();
-//				if (keyPress == KeyCodes.KEY_ENTER){
-//					login();
-//				}
-//			}
-//		});
-		
 		password.addKeyPressHandler(new KeyPressHandler() {
 			
 			@Override

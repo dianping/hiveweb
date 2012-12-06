@@ -9,11 +9,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.security.Krb5Login;
 import org.apache.hadoop.security.UserGroupInformation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dianping.cosmos.hive.client.bo.LoginTokenBo;
 import com.dianping.cosmos.hive.client.service.LoginService;
 import com.dianping.cosmos.hive.server.queryengine.jdbc.HiveJdbcClient;
+import com.dianping.cosmos.hive.server.store.domain.UserLogin;
+import com.dianping.cosmos.hive.server.store.service.UserLoginService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
@@ -28,6 +31,9 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 			.getLog(HiveQueryServiceImpl.class);
 
 	private final static long HALD_DAY_IN_MILLISECONDS = 12 * 60 * 60 * 1000L;
+	
+	@Autowired
+	private UserLoginService userLoginService;
 
 	public static Cache<String, Date> tokenCache = CacheBuilder.newBuilder()
 			.concurrencyLevel(4).maximumSize(100000)
@@ -86,6 +92,11 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 							+ t.getValue());
 				}
 			}
+			UserLogin userLogin = new UserLogin();
+			userLogin.setUsername(username);
+			userLogin.setLogintime(addtime);
+			
+			userLoginService.insertUserLogin(userLogin);
 
 			logger.info(String
 					.format("Connection established successfully , username:%s , password:%s ,tokenid:%s ,tokenCacheSize:%s",

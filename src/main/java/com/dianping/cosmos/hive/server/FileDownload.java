@@ -52,13 +52,13 @@ public class FileDownload extends HttpServlet {
 				try {
 					output.close();
 				} catch (IOException ioe) {
-					ioe.printStackTrace();
+					logger.error(ioe);
 				}
 			if (input != null)
 				try {
 					input.close();
 				} catch (IOException ioe) {
-					ioe.printStackTrace();
+					logger.error(ioe);
 				}
 		}
 	}

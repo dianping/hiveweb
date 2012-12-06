@@ -390,7 +390,6 @@ public class HiveJdbcClient {
 						}
 					} catch (Exception e) {
 						logger.error("get connection failed：" + e.getMessage());
-						e.printStackTrace();
 					}
 					return c;
 				}
