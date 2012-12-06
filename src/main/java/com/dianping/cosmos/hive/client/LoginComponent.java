@@ -30,9 +30,9 @@ public class LoginComponent {
 	}
 	
 	public void cleanup() {
-		Window.alert("login failed");
+		Window.alert("Login Failed !");
 		LoginPage.removeCookies();
-		redirect("index.html");
+		Window.Location.assign("/index.html");
 	}
 
 	public native void redirect(String URL)

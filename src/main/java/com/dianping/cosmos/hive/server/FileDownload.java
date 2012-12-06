@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLDecoder;
 
 import javax.servlet.ServletException;
@@ -12,24 +13,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.dianping.cosmos.hive.server.queryengine.jdbc.DataFileStore;
 
 public class FileDownload extends HttpServlet {
+	private static final Log logger = LogFactory.getLog(FileDownload.class);
+	
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		
-		
 		String filename = URLDecoder.decode(request.getPathInfo(), "UTF-8");
-		File file = new File(DataFileStore.FILE_STORE_DIRECTORY_LOCATION, filename);
+		logger.info("request filename:" + filename);
+		
+		URI u = URI.create(DataFileStore.FILE_STORE_DIRECTORY_LOCATION);
+		File file = new File(u.getPath(), filename);
 		response.setContentType("application/x-download");
 		response.setHeader("Content-Disposition", "attachment; filename="
 				+ filename);
@@ -50,12 +51,14 @@ public class FileDownload extends HttpServlet {
 			if (output != null)
 				try {
 					output.close();
-				} catch (IOException ignore) {
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
 				}
 			if (input != null)
 				try {
 					input.close();
-				} catch (IOException ignore) {
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
 				}
 		}
 	}

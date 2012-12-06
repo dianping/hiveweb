@@ -13,15 +13,12 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -39,8 +36,6 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	ListBox dbListBox;
 	@UiField
 	ListBox tableListBox;
-	@UiField
-	Button submitBut;
 	@UiField(provided = true)
 	CellTable<TableSchemaBo> tableSchemaTable;
 	@UiField
@@ -52,7 +47,7 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	private final HiveQueryServiceAsync hiveQueryService = HiveQueryServiceAsync.Util
 			.getInstance();
 
-	private final static LoginServiceAsync loginService = LoginServiceAsync.Util
+	private final LoginServiceAsync loginService = LoginServiceAsync.Util
 			.getInstance();
 
 	public void onModuleLoad() {
@@ -88,7 +83,8 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	}
 
 	private void initialize() {
-		tableSchemaTable = new CellTable<TableSchemaBo>(15, GWT.<TableResources> create(TableResources.class));
+		tableSchemaTable = new CellTable<TableSchemaBo>(15,
+				GWT.<TableResources> create(TableResources.class));
 		tableSchemaTable
 				.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		TextColumn<TableSchemaBo> fieldNameColumn = new TextColumn<TableSchemaBo>() {
@@ -127,7 +123,7 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 						dbListBox.clear();
 						dbs = result;
 						for (String db : dbs) {
-							dbListBox.addItem(db.toUpperCase());
+							dbListBox.addItem(db);
 						}
 						String dbname = dbListBox.getValue(dbListBox
 								.getSelectedIndex());
@@ -148,51 +144,12 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 				getTables(dbname);
 			}
 		});
-
-		submitBut.addClickHandler(new ClickHandler() {
-
+		
+		tableListBox.addChangeHandler(new ChangeHandler() {
+			
 			@Override
-			public void onClick(ClickEvent event) {
-				final String dbName = dbListBox.getValue(dbListBox
-						.getSelectedIndex());
-				final String tableName = tableListBox.getValue(tableListBox
-						.getSelectedIndex());
-				if (!dbName.equals("") && !tableName.equals("")) {
-					hiveQueryService.getTableSchema(getTokenid(), dbName,
-							tableName,
-							new AsyncCallback<List<TableSchemaBo>>() {
-
-								@Override
-								public void onSuccess(List<TableSchemaBo> result) {
-									tableSchemaTable.setRowCount(result.size(),
-											true);
-									tableSchemaTable.setRowData(0, result);
-
-									hiveQueryService.getTableSchemaDetail(
-											getTokenid(), dbName, tableName,
-											new AsyncCallback<String>() {
-
-												@Override
-												public void onSuccess(
-														String result) {
-													tableDetail.setText(result);
-												}
-
-												@Override
-												public void onFailure(
-														Throwable caught) {
-													caught.printStackTrace();
-												}
-											});
-								}
-
-								@Override
-								public void onFailure(Throwable caught) {
-									caught.printStackTrace();
-								}
-							});
-
-				}
+			public void onChange(ChangeEvent event) {
+				getTableSchema();
 			}
 		});
 	}
@@ -210,6 +167,45 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 							tables = result;
 							for (int i = 0; i < tables.size(); i++) {
 								tableListBox.addItem(tables.get(i));
+							}
+							getTableSchema();
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							caught.printStackTrace();
+						}
+					});
+		}
+	}
+
+	private void getTableSchema() {
+		final String dbName = dbListBox.getValue(dbListBox.getSelectedIndex());
+		final String tableName = tableListBox.getValue(tableListBox
+				.getSelectedIndex());
+		if (!dbName.equals("") && !tableName.equals("")) {
+			hiveQueryService.getTableSchema(getTokenid(), dbName, tableName,
+					new AsyncCallback<List<TableSchemaBo>>() {
+
+						@Override
+						public void onSuccess(List<TableSchemaBo> result) {
+							if (result != null && result.size() > 0){
+								hiveQueryService.getTableSchemaDetail(getTokenid(), dbName, tableName,
+										new AsyncCallback<String>() {
+
+											@Override
+											public void onSuccess(String result) {
+												tableDetail.setText(result);
+											}
+
+											@Override
+											public void onFailure(Throwable caught) {
+												caught.printStackTrace();
+											}
+										});
+								
+								tableSchemaTable.setRowCount(result.size(), true);
+								tableSchemaTable.setRowData(0, result);
 							}
 						}
 

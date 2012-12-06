@@ -32,11 +32,11 @@ public class HadoopConf extends javax.security.auth.login.Configuration {
 			new HashMap<String, String>());
 	
 	private final Map<String, String> USER_KERBEROS_OPTIONS = new HashMap<String, String>();
-	static {
-		//USER_KERBEROS_OPTIONS.put("principal", "yukang.chen@DIANPING.COM");
+//	static {
+//		USER_KERBEROS_OPTIONS.put("principal", "yukang.chen@DIANPING.COM");
 //		USER_KERBEROS_OPTIONS.put("useTicketCache", "false");
 //		USER_KERBEROS_OPTIONS.put("storeKey", "false");
-	}
+//	}
 	private final AppConfigurationEntry USER_KERBEROS_LOGIN = new AppConfigurationEntry(
 			KerberosUtil.getKrb5LoginModuleName(),
 			LoginModuleControlFlag.OPTIONAL, USER_KERBEROS_OPTIONS);

@@ -30,6 +30,7 @@
 				<td></td>
 				<td>
 					<g:Button ui:field="submit_button" text="login"></g:Button>
+					<g:Button ui:field="reset_button" text="reset"></g:Button>
 				</td>
 			</tr>
 		</table>

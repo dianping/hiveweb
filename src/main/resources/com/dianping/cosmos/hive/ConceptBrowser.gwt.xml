@@ -12,7 +12,5 @@
 	<source path='client' />
 	<source path='shared' />
 
-	<servlet path="/myfiledownload" class="com.dianping.cosmos.hive.server.FileDownload" />
-
 	<extend-property name="locale" values="en" />
 </module>

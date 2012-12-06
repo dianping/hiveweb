@@ -21,6 +21,7 @@ import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
 import com.dianping.cosmos.hive.server.queryengine.jdbc.HiveJdbcClient;
 import com.dianping.cosmos.hive.server.store.domain.QueryHistory;
 import com.dianping.cosmos.hive.server.store.service.QueryHistoryService;
+import com.dianping.cosmos.hive.shared.util.StringUtils;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 @SuppressWarnings("serial")
@@ -34,7 +35,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 	private QueryHistoryService queryHistoryService;
 
 	@Autowired
-	@Qualifier("JdbcQueryEngine")
+	@Qualifier("HiveCmdLineQueryEngine")
 	private IQueryEngine queryEngine;
 	
 	@Autowired
@@ -81,7 +82,8 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		history.setFilename(resultLocation);
 		queryHistoryService.insertQueryHistory(history);
 		
-		return result.toHiveQueryOutputBo();
+		HiveQueryOutputBo bo = result.toHiveQueryOutputBo();
+		return bo;
 	}
 
 	@Override
@@ -96,7 +98,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public String getQueryPlan(String tokenid, String hql, String database) {
-		return hiveJdbcClient.getQueryPlan(tokenid, hql, database);
+		return hiveJdbcClient.getQueryPlan(tokenid, StringUtils.preprocessQuery(hql), database);
 	}
 
 	@Override

@@ -7,7 +7,6 @@
 			border-bottom: 2px solid #ccc;
 			text-align: left;
 			margin-bottom: 5px;
-			white-space: nowrap;
 		}
 	</ui:style>
 	<g:VerticalPanel width="100%">
