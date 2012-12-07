@@ -25,6 +25,11 @@
 		<servlet-name>MyFileServlet</servlet-name>
 		<servlet-class>com.dianping.cosmos.hive.server.FileDownload</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>MyLogoutServlet</servlet-name>
+		<servlet-class>com.dianping.cosmos.hive.server.Logout</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>springGwtRemoteServiceServlet</servlet-name>
@@ -35,9 +40,15 @@
 		<servlet-name>MyFileServlet</servlet-name>
 		<url-pattern>/hivewebrowser/myfiledownload/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>MyLogoutServlet</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
+		<welcome-file>home.html</welcome-file>
 	</welcome-file-list>
 
 </web-app>

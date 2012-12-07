@@ -15,4 +15,12 @@ public final class StringUtils {
 		}
 		return ret.toString();
 	}
+	
+	public static String preprocessQuery(String hql) {
+		hql = hql.trim();
+		if (hql.endsWith(";")){
+			hql = hql.substring(0, hql.length() - 1);
+		}
+		return hql; 
+	}
 }

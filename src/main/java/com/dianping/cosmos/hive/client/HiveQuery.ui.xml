@@ -9,48 +9,46 @@
 			margin-bottom: 5px;
 			white-space: nowrap;
 		}
-		
 		.hqlTextArea {
-			width: 570px;
-			padding: 5px;
+			color: #942727;
+			font-weight: bold;
+			width: 700px;
+			height: 250px;
+			padding: 3px;
 			border: 3px solid #ccc;
 			border-top: 1px solid #666;
-			font-size: 150%;
+			font-size: 130%;
+			font-family: Tahoma, "Microsoft Yahei", Helvetica;
 			background-color: oldlace;
 		}
 		
 		.progressTextArea {
-			color: #884D10;
-			background-color: #DDDBD9;
-			width: 530px;
-			height: 200px;
+			color: #3B4CC7;
+			background-color: #EDFAEC;
+			width: 300px;
+			height: 250px;
 		}
 	</ui:style>
 	<g:VerticalPanel spacing='3'>
-		<g:HorizontalPanel spacing="5">
-			<g:FlowPanel>
-				<g:HorizontalPanel>
-					<g:HTMLPanel>
-						Databases:
-					</g:HTMLPanel>
-					<g:ListBox ui:field="dbListBox" visibleItemCount="1" />
-				</g:HorizontalPanel>
-				<g:HTMLPanel>
-					Please write your hive query:
-				</g:HTMLPanel>
-				<g:TextArea ui:field="hqlTextArea" visibleLines="6"
-					styleName="{style.hqlTextArea}" />
-				<g:HorizontalPanel spacing='5'>
-					<g:CheckBox ui:field="isStoreFile" text="Store To File" />
-					<g:Button ui:field="submitBut" text="submit" width="100px" />
-					<g:Button ui:field="submitQPBut" text="Query Plan" width="120px" />
-				</g:HorizontalPanel>
-			</g:FlowPanel>
-			<g:TextArea ui:field="progressTextArea" text="Query Plan"
-				styleName="{style.progressTextArea}" />
-		</g:HorizontalPanel>
+		<g:VerticalPanel width="100%" spacing='3'>
+			<g:HorizontalPanel>
+				<g:HTMLPanel>Databases:</g:HTMLPanel>
+				<g:ListBox ui:field="dbListBox" visibleItemCount="1" />
+			</g:HorizontalPanel>
+			<g:HTMLPanel>Please write your hive query:</g:HTMLPanel>
+			<g:HorizontalPanel spacing="3">
+				<g:TextArea ui:field="hqlTextArea" styleName="{style.hqlTextArea}" />
+				<g:TextArea ui:field="progressTextArea" text="Query Plan"
+					styleName="{style.progressTextArea}"/>
+			</g:HorizontalPanel>
+			<g:HorizontalPanel spacing='3'>
+				<g:CheckBox ui:field="isStoreFile" text="Store To File" />
+				<g:Button ui:field="submitBut" text="Submit" width="120px" />
+				<g:Button ui:field="submitQPBut" text="Query Plan" width="120px" />
+			</g:HorizontalPanel>
+		</g:VerticalPanel>
 		<g:VerticalPanel width="100%">
-			<c:CellTable addStyleNames='{style.cellTable}' pageSize='15' ui:field='cellTable' />
+			<c:CellTable addStyleNames='{style.cellTable}' ui:field='cellTable' />
 			<c:SimplePager ui:field='pager' />
 		</g:VerticalPanel>
 	</g:VerticalPanel>

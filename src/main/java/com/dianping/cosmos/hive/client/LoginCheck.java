@@ -6,7 +6,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class LoginCheck {
 	private static Boolean isValidToken = false;
-	private static Boolean hasReturnValue = false;
 
 	private final static LoginServiceAsync loginService = LoginServiceAsync.Util
 			.getInstance();
@@ -21,14 +20,12 @@ public class LoginCheck {
 				@Override
 				public void onSuccess(Boolean result) {
 					isValidToken = result;
-					hasReturnValue = true;
 				}
 
 				@Override
 				public void onFailure(Throwable caught) {
 					caught.printStackTrace();
 					isValidToken = false;
-					hasReturnValue = true;
 				}
 			});
 		}

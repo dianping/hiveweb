@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianping.cosmos.hive.server.store.persistence.QueryHistoryMapper">
+
+	<select id="selectUserLoginByUsername" parameterType="String"
+		resultType="UserLogin">
+		<![CDATA[
+		select username, logintime from
+		HW_UserLogin where username = #{username} order by id desc
+		]]>
+    </select>
+
+	<insert id="insertUserLogin"
+		parameterType="UserLogin">
+	    <![CDATA[
+	    INSERT INTO HW_UserLogin (username, logintime)
+			VALUES (#{username}, #{logintime})
+		]]>
+	</insert>
+</mapper>

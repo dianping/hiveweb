@@ -12,6 +12,8 @@ public class HiveQueryOutput{
 	private List<List<String>> rowList = new ArrayList<List<String>>();
 	
 	private String storeFileLocation;
+	
+	private String errorMessage;
 
 	public List<String> getTitleList() {
 		return titleList;
@@ -29,6 +31,14 @@ public class HiveQueryOutput{
 		this.titleList = new ArrayList<String>(titleList);
 	}
 	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
 	public void addRow(List<String> row){
 		rowList.add(row);
 	}
@@ -40,15 +50,24 @@ public class HiveQueryOutput{
 	public HiveQueryOutputBo toHiveQueryOutputBo(){
 		HiveQueryOutputBo bo = new HiveQueryOutputBo();
 		
-		bo.setFieldSchema(titleList.toArray(new String[titleList.size()]));
+		String[] fieldsSchema = new String[]{};
+		if (titleList != null && titleList.size() > 0){
+			fieldsSchema = titleList.toArray(new String[titleList.size()]);
+		}
+		bo.setFieldSchema(fieldsSchema);
 		List<String[]> data = new ArrayList<String[]>();
 		
-		int rowCount = rowList.size();
+		int rowCount = 0;
+		if (rowList != null){
+			rowCount = rowList.size();
+		}
+		
 		for (int i = 0; i < rowCount; i++){
 			int columnCount = rowList.get(i).size();
 			data.add(rowList.get(i).toArray(new String[columnCount]));
 		}
 		bo.setData(data);
+		bo.setErrorMsg(errorMessage);
 		return bo;
 	}
 

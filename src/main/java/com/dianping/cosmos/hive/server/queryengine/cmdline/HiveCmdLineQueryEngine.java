@@ -23,7 +23,7 @@ public class HiveCmdLineQueryEngine implements IQueryEngine{
 	private static final String BASE_DIR = "/data/hqe/";
 	private static final String RESULT_BASE_DIR = BASE_DIR + "result";
 	private static final String STATUS_BASE_DIR = BASE_DIR + "status";
-	private static final String HIVE_CMD = "/usr/local/hadoop/hive-0.8.1/bin/hive";
+	private static final String HIVE_CMD = "/usr/local/hadoop/hive-release/bin/hive";
 	
 	private static Set<String> s_hiveConfigSet = new HashSet<String>();
 
@@ -106,14 +106,6 @@ public class HiveCmdLineQueryEngine implements IQueryEngine{
 			s_logger.error("Exception occurs in reading status file: " + statusFileLocation, e);
 			return null;
 		}
-	}
-
-	@Override
-	public String getQueryOutputLocation(String username, long timestamp) {
-		String resultLocation = getResultLocation(username, timestamp);
-		if((new File(resultLocation)).exists())
-			return resultLocation;
-		return null;
 	}
 
 	@Override
