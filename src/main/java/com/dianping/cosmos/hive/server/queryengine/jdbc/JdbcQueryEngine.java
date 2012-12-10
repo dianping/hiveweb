@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryInput;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryOutput;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
+import com.dianping.cosmos.hive.shared.util.StringUtils;
 
 public class JdbcQueryEngine implements IQueryEngine {
 
@@ -15,7 +16,7 @@ public class JdbcQueryEngine implements IQueryEngine {
 	public HiveQueryOutput getQueryResult(HiveQueryInput input) {
 		String tokenid = input.getTokenid();
 		String username = input.getUsername();
-		String hql = input.getOriginalHql();
+		String hql = StringUtils.preprocessQuery(input.getOriginalHql());
 		String database = input.getDatabase();
 		int resultLimit = input.getResultLimit();
 		Boolean isStoreFile = input.isStoreResult();
@@ -28,12 +29,6 @@ public class JdbcQueryEngine implements IQueryEngine {
 	// under the current status, it can't get the query status via hive jdbc
 	@Override
 	public String getQueryStatus(String username, long timestamp) {
-		return null;
-	}
-
-	// using another way to create unique file identify
-	@Override
-	public String getQueryOutputLocation(String username, long timestamp) {
 		return null;
 	}
 

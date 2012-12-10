@@ -13,7 +13,7 @@ public class IndexedColumn extends Column<String[], TextAndTooltip> {
 	@Override
 	public TextAndTooltip getValue(String[] object) {
 		String value = object[this.index];
-		String shortValue = value.length() > 20 ? value.substring(0, 20)
+		String shortValue = value.length() > 35 ? value.substring(0, 35)
 				+ "..." : value;
 		return new TextAndTooltip(shortValue, value);
 	}

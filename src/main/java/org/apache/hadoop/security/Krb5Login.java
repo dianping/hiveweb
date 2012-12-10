@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -23,11 +24,14 @@ import org.apache.hadoop.security.UserGroupInformation.AuthenticationMethod;
 
 public class Krb5Login {
 	private static final Log logger = LogFactory.getLog(Krb5Login.class);
-	
-	//private static String S_CONFIG_NAME = "krb5";
-	private static org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
-	
+
+	public static String HIVE_CONNECTION_URL;
+	private static final org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
+
 	static {
+		ResourceBundle bundle = ResourceBundle.getBundle("context");
+		HIVE_CONNECTION_URL = bundle.getString("hive-web.jdbc.connection.url");
+		
 		conf.set("hadoop.security.authentication", "kerberos");
 		try {
 			Class.forName("org.apache.hadoop.hive.jdbc.HiveDriver");
@@ -119,9 +123,9 @@ public class Krb5Login {
 		public void refresh() {
 		}
 	}
-	
-	
-	public static Connection getVerifiedConnection(String username, final String password){
+
+	public static UserGroupInformation getVerifiedUgi(String username,
+			final String password) {
 		Subject subject = new Subject();
 		LoginContext login = null;
 		CallbackHandler handler = new CallbackHandler() {
@@ -137,32 +141,81 @@ public class Krb5Login {
 		};
 		try {
 			HadoopConf hadoopConf = new HadoopConf();
-			hadoopConf.putUserKerberosOptions("principal", username + "@DIANPING.COM");
+			hadoopConf.putUserKerberosOptions("principal", username
+					+ "@DIANPING.COM");
 			hadoopConf.putUserKerberosOptions("useTicketCache", "false");
 			hadoopConf.putUserKerberosOptions("storeKey", "false");
-			
-			login = new LoginContext(HadoopConfiguration.USER_KERBEROS_CONFIG_NAME, subject, handler, hadoopConf);
+
+			login = new LoginContext(HadoopConf.USER_KERBEROS_CONFIG_NAME,
+					subject, handler, hadoopConf);
 			login.login();
 		} catch (LoginException e) {
 			e.printStackTrace();
 		}
-        UserGroupInformation loginUser = new UserGroupInformation(subject);
-        //loginUser.setLogin(login);
-        subject.getPrincipals(User.class).iterator().next().setLogin(login);
-        loginUser.setAuthenticationMethod(AuthenticationMethod.KERBEROS);
-        loginUser = new UserGroupInformation(login.getSubject());
-        
-        logger.debug(loginUser.getShortUserName());
-        logger.debug("loginUser.getUserName() " + loginUser.getUserName());
-        
+		UserGroupInformation loginUser = new UserGroupInformation(subject);
+		// loginUser.setLogin(login);
+		subject.getPrincipals(User.class).iterator().next().setLogin(login);
+		loginUser.setAuthenticationMethod(AuthenticationMethod.KERBEROS);
+		loginUser = new UserGroupInformation(login.getSubject());
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("loginUser.getShortUserName():"
+					+ loginUser.getShortUserName());
+			logger.debug("loginUser.getUserName() " + loginUser.getUserName());
+		}
+		return loginUser;
+	}
+
+	public static Connection getVerifiedConnection(String username,
+			final String password) {
+		Subject subject = new Subject();
+		LoginContext login = null;
+		CallbackHandler handler = new CallbackHandler() {
+			public void handle(Callback[] callbacks) throws IOException,
+					UnsupportedCallbackException {
+				for (Callback callback : callbacks) {
+					if (callback instanceof PasswordCallback) {
+						PasswordCallback pc = (PasswordCallback) callback;
+						pc.setPassword(password.toCharArray());
+					}
+				}
+			}
+		};
+		try {
+			HadoopConf hadoopConf = new HadoopConf();
+			hadoopConf.putUserKerberosOptions("principal", username
+					+ "@DIANPING.COM");
+			hadoopConf.putUserKerberosOptions("useTicketCache", "false");
+			hadoopConf.putUserKerberosOptions("storeKey", "false");
+
+			login = new LoginContext(HadoopConf.USER_KERBEROS_CONFIG_NAME,
+					subject, handler, hadoopConf);
+			login.login();
+		} catch (LoginException e) {
+			e.printStackTrace();
+		}
+		UserGroupInformation loginUser = new UserGroupInformation(subject);
+		// loginUser.setLogin(login);
+		subject.getPrincipals(User.class).iterator().next().setLogin(login);
+		loginUser.setAuthenticationMethod(AuthenticationMethod.KERBEROS);
+		loginUser = new UserGroupInformation(login.getSubject());
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("loginUser.getShortUserName():"
+					+ loginUser.getShortUserName());
+			logger.debug("loginUser.getUserName() " + loginUser.getUserName());
+		}
 		Connection conn = loginUser.doAs(new PrivilegedAction<Connection>() {
 			@Override
 			public Connection run() {
 				Connection c = null;
 				try {
-					c = DriverManager.getConnection("jdbc:hive://10.1.77.84:10000", "", "");
-					logger.debug("through conn");
+					logger.debug("start get connection");
+					c = DriverManager
+							.getConnection(HIVE_CONNECTION_URL, "", "");
+					logger.debug("through connection");
 				} catch (Exception e) {
+					logger.error("get connection failed");
 					e.printStackTrace();
 				}
 				return c;
@@ -170,20 +223,22 @@ public class Krb5Login {
 		});
 		return conn;
 	}
-	
+
 	public static void main(String[] args) {
 		org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
 		System.out.println("-------------------------------------------------------");
 		System.out.println(conf.get("hadoop.security.authentication"));
 		System.out.println(conf.get("hadoop.security.authorization"));
-		System.out.println("-------------------------------------------------------");
+		System.out
+				.println("-------------------------------------------------------");
 		conf.set("hadoop.security.authentication", "kerberos");
-		//UserGroupInformation.setConfiguration(conf);
+		// UserGroupInformation.setConfiguration(conf);
 		try {
 			Krb5Login.getVerifiedConnection("searchcron", "searchcron");
-			//Krb5Login.chech("yukang.chen@DIANPING.COM", "yukang.chen");
-			//Krb5Login.check1();
-			//Krb5Login.verifyPassword("yukang.chen@DIANPING.COM", "yukang.chen");
+			// Krb5Login.chech("yukang.chen@DIANPING.COM", "yukang.chen");
+			// Krb5Login.check1();
+			// Krb5Login.verifyPassword("yukang.chen@DIANPING.COM",
+			// "yukang.chen");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

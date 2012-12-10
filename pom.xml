@@ -132,6 +132,16 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-cli</artifactId>
+			<version>0.8.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-builtins</artifactId>
+			<version>0.8.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-core</artifactId>
 			<version>1.0.3</version>
@@ -176,9 +186,9 @@
 				<!-- Plugin configuration. There are many available options, see gwt-maven-plugin 
 					documentation at codehaus.org -->
 				<configuration>
+					<finalName>hiveweb</finalName>
 					<runTarget>ConceptBrowser.html</runTarget>
 					<hostedWebapp>${webappDirectory}</hostedWebapp>
-					<i18nMessagesBundle>com.dianping.cosmos.hive.client.Messages</i18nMessagesBundle>
 				</configuration>
 			</plugin>
 

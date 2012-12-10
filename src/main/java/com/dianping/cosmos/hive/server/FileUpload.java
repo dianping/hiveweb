@@ -63,7 +63,5 @@ public class FileUpload extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }

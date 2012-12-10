@@ -27,6 +27,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
 
 @UrlPatternEntryPoint("queryhistory.html(\\\\?gwt.codesvr=127.0.0.1:9997)?")
 public class QueryHistory extends LoginComponent implements EntryPoint {
@@ -118,10 +120,10 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				downloadButton) {
 			public String getValue(QueryHistoryBo o) {
 				String fileLocation = o.getFilename();
-				
-				if (fileLocation == null || fileLocation.equals("")){
+
+				if (fileLocation == null || fileLocation.equals("")) {
 					return "Not Store";
-				}else {
+				} else {
 					return "Download";
 				}
 			}
@@ -134,10 +136,12 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 							String value) {
 						String fileLocation = object.getFilename();
 						GWT.log("Downloading " + fileLocation);
-						if (fileLocation != null && fileLocation.indexOf('/') > 0){
-							String fileName = fileLocation.substring(fileLocation.lastIndexOf('/') + 1);
-							System.out.println(fileName);
-							String link = GWT.getModuleBaseURL() + "myfiledownload/" + fileName;
+						if (fileLocation != null
+								&& fileLocation.indexOf('/') > 0) {
+							String fileName = fileLocation
+									.substring(fileLocation.lastIndexOf('/') + 1);
+							String link = GWT.getModuleBaseURL()
+									+ "myfiledownload/" + fileName;
 							Window.open(link, "_blank", "");
 						}
 					}
@@ -145,9 +149,9 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 		cellTable.addColumn(downloadColumn, "Download File");
 
 		cellTable.setColumnWidth(usernameColumn, "10%");
-		cellTable.setColumnWidth(addtimeColumn, "10%");
+		cellTable.setColumnWidth(addtimeColumn, "15%");
 		cellTable.setColumnWidth(hqlColumn, "65%");
-		cellTable.setColumnWidth(downloadColumn, "15%");
+		cellTable.setColumnWidth(downloadColumn, "10%");
 
 		SimplePager.Resources pagerResources = GWT
 				.create(SimplePager.Resources.class);
@@ -161,9 +165,25 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				new AsyncCallback<List<QueryHistoryBo>>() {
 
 					@Override
-					public void onSuccess(List<QueryHistoryBo> result) {
-						cellTable.setRowCount(result.size(), true);
-						cellTable.setRowData(result);
+					public void onSuccess(final List<QueryHistoryBo> result) {
+						AsyncDataProvider<QueryHistoryBo> provider = new AsyncDataProvider<QueryHistoryBo>() {
+							@Override
+							protected void onRangeChanged(
+									HasData<QueryHistoryBo> display) {
+								int start = display.getVisibleRange()
+										.getStart();
+								int end = start
+										+ display.getVisibleRange().getLength();
+								end = end >= result.size() ? result.size()
+										: end;
+								List<QueryHistoryBo> sub = result
+										.subList(start, end);
+								updateRowData(start, sub);
+							}
+						};
+						provider.addDataDisplay(cellTable);
+						provider.updateRowCount(result.size(), true);
+						pager.setDisplay(cellTable);
 					}
 
 					@Override
@@ -172,6 +192,10 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 					}
 				});
 
+	}
+	
+	public void initQueryHistoryList(AsyncDataProvider<QueryHistoryBo> dataProvider) {
+		dataProvider.addDataDisplay(cellTable);
 	}
 
 }
