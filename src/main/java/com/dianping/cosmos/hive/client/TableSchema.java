@@ -93,7 +93,7 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 				return ts.getFieldName();
 			}
 		};
-		tableSchemaTable.addColumn(fieldNameColumn, "Field Name");
+		tableSchemaTable.addColumn(fieldNameColumn, "字段名");
 
 		TextColumn<TableSchemaBo> fieldTypeColumn = new TextColumn<TableSchemaBo>() {
 
@@ -102,7 +102,7 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 				return ts.getFieldType();
 			}
 		};
-		tableSchemaTable.addColumn(fieldTypeColumn, "Field Type");
+		tableSchemaTable.addColumn(fieldTypeColumn, "字段类型");
 
 		TextColumn<TableSchemaBo> fieldCommentColumn = new TextColumn<TableSchemaBo>() {
 
@@ -111,7 +111,7 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 				return ts.getFieldComment();
 			}
 		};
-		tableSchemaTable.addColumn(fieldCommentColumn, "Field Comment");
+		tableSchemaTable.addColumn(fieldCommentColumn, "字段注释");
 	}
 
 	private void bind() {

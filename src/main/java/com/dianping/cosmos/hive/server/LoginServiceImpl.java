@@ -1,5 +1,7 @@
 package com.dianping.cosmos.hive.server;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +33,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 			.getLog(HiveQueryServiceImpl.class);
 
 	private final static long HALD_DAY_IN_MILLISECONDS = 12 * 60 * 60 * 1000L;
-	
+
 	@Autowired
 	private UserLoginService userLoginService;
 
@@ -58,8 +60,9 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 					logger.info(tokenid + " Authenticated");
 					return true;
 				}
-			}else {
-				logger.info("tokenid time expired, tokenid:" + tokenid + " addtime:" + addtime);
+			} else {
+				logger.info("tokenid time expired, tokenid:" + tokenid
+						+ " addtime:" + addtime);
 			}
 		}
 		return false;
@@ -71,36 +74,46 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 
 		UserGroupInformation ugi = Krb5Login.getVerifiedUgi(username, password);
 		if (ugi == null) {
-			logger.error(String
-					.format("Get Verified UGI Failed, username:%s ,password:%s",
-							username, password));
+			logger.error(String.format(
+					"Get Verified UGI Failed, username:%s ,password:%s",
+					username, password));
 		} else {
-			String tokenid = UUID.randomUUID().toString();
-			Date addtime = new Date();
-
-			tokenBo = new LoginTokenBo();
-			tokenBo.setTokenid(tokenid);
-			tokenBo.setAddtime(addtime);
-
-			tokenCache.put(tokenid, addtime);
-			HiveJdbcClient.putUgiCache(tokenid, ugi);
-			
-			if (logger.isDebugEnabled()){
-				Map<String, Date> tokenCacheSnapshot = tokenCache.asMap();
-				for (Map.Entry<String, Date> t : tokenCacheSnapshot.entrySet()) {
-					logger.info("tokenid:" + t.getKey() + " addtime:"
-							+ t.getValue());
+			// Test if this ugi can work through hive server authentication
+			Connection conn = HiveJdbcClient.getConnection(ugi);
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					logger.error(e);
 				}
-			}
-			UserLogin userLogin = new UserLogin();
-			userLogin.setUsername(username);
-			userLogin.setLogintime(addtime);
-			
-			userLoginService.insertUserLogin(userLogin);
+				String tokenid = UUID.randomUUID().toString();
+				Date addtime = new Date();
 
-			logger.info(String
-					.format("Connection established successfully , username:%s , password:%s ,tokenid:%s ,tokenCacheSize:%s",
-							username, password, tokenid, tokenCache.size()));
+				tokenBo = new LoginTokenBo();
+				tokenBo.setTokenid(tokenid);
+				tokenBo.setAddtime(addtime);
+
+				tokenCache.put(tokenid, addtime);
+				HiveJdbcClient.putUgiCache(tokenid, ugi);
+
+				if (logger.isDebugEnabled()) {
+					Map<String, Date> tokenCacheSnapshot = tokenCache.asMap();
+					for (Map.Entry<String, Date> t : tokenCacheSnapshot
+							.entrySet()) {
+						logger.info("tokenid:" + t.getKey() + " addtime:"
+								+ t.getValue());
+					}
+				}
+				UserLogin userLogin = new UserLogin();
+				userLogin.setUsername(username);
+				userLogin.setLogintime(addtime);
+
+				userLoginService.insertUserLogin(userLogin);
+
+				logger.info(String
+						.format("Connection established successfully , username:%s , password:%s ,tokenid:%s ,tokenCacheSize:%s",
+								username, password, tokenid, tokenCache.size()));
+			}
 		}
 		return tokenBo;
 	}

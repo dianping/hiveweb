@@ -37,9 +37,8 @@ public class UserLoginService {
 
 	@Transactional
 	public void insertUserLogin(UserLogin userLogin) {
-		if (logger.isDebugEnabled()) {
-			logger.debug(userLogin);
-		}
+		logger.debug("inserting userlogin " + userLogin + " into database");
 		userLoginMapper.insertUserLogin(userLogin);
+		logger.debug("inserted userlogin " + userLogin + " into database");
 	};
 }

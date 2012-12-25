@@ -8,7 +8,6 @@ import com.dianping.cosmos.hive.client.bo.LoginTokenBo;
 import com.dianping.cosmos.hive.client.service.LoginServiceAsync;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -17,9 +16,6 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -127,7 +123,7 @@ public class LoginPage extends LoginComponent implements EntryPoint {
 						public void onSuccess(LoginTokenBo result) {
 							if (result == null) {
 								message.setWidget(new HTML(
-										"login failed"));
+										"登陆失败!"));
 							} else {
 								setCookies(u, result.getTokenid(),
 										result.getAddtime());
@@ -138,12 +134,11 @@ public class LoginPage extends LoginComponent implements EntryPoint {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							message.setWidget(new HTML("login failed"));
+							message.setWidget(new HTML("登陆失败!"));
 						}
 					});
 		} else {
-			message.setWidget(new HTML(
-					"username or password can not be empty!"));
+			message.setWidget(new HTML("用户名和密码不能为空!"));
 		}
 	}
 

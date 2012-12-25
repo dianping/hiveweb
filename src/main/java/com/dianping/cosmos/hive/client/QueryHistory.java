@@ -92,7 +92,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				return o.getUsername();
 			}
 		};
-		cellTable.addColumn(usernameColumn, "User Name");
+		cellTable.addColumn(usernameColumn, "用户名");
 
 		DateTimeFormat dateFormat = DateTimeFormat
 				.getFormat(PredefinedFormat.DATE_TIME_MEDIUM);
@@ -105,7 +105,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 			}
 
 		};
-		cellTable.addColumn(addtimeColumn, "Add Time");
+		cellTable.addColumn(addtimeColumn, "查询时间");
 
 		TextColumn<QueryHistoryBo> hqlColumn = new TextColumn<QueryHistoryBo>() {
 			@Override
@@ -113,7 +113,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				return o.getHql();
 			}
 		};
-		cellTable.addColumn(hqlColumn, "Hive Query");
+		cellTable.addColumn(hqlColumn, "查询语句");
 
 		ButtonCell downloadButton = new ButtonCell();
 		Column<QueryHistoryBo, String> downloadColumn = new Column<QueryHistoryBo, String>(
@@ -122,9 +122,9 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				String fileLocation = o.getFilename();
 
 				if (fileLocation == null || fileLocation.equals("")) {
-					return "Not Store";
+					return "未保存";
 				} else {
-					return "Download";
+					return "下载";
 				}
 			}
 		};
@@ -146,12 +146,12 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 						}
 					}
 				});
-		cellTable.addColumn(downloadColumn, "Download File");
+		cellTable.addColumn(downloadColumn, "下载结果文件");
 
 		cellTable.setColumnWidth(usernameColumn, "10%");
 		cellTable.setColumnWidth(addtimeColumn, "15%");
-		cellTable.setColumnWidth(hqlColumn, "65%");
-		cellTable.setColumnWidth(downloadColumn, "10%");
+		cellTable.setColumnWidth(hqlColumn, "60%");
+		cellTable.setColumnWidth(downloadColumn, "15%");
 
 		SimplePager.Resources pagerResources = GWT
 				.create(SimplePager.Resources.class);

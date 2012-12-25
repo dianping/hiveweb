@@ -11,17 +11,17 @@
 		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames="{style.content}">
-		<h2>Hive Web Login</h2>
+		<h2>Hive Web登陆</h2>
 		<g:SimplePanel ui:field="message"></g:SimplePanel>
 		<table>
 			<tr>
-				<td>Username: </td>
+				<td>用户名: </td>
 				<td>
 					<g:TextBox ui:field="username"></g:TextBox>
 				</td>
 			</tr>
 			<tr>
-				<td>Password: </td>
+				<td>密码: </td>
 				<td>
 					<g:PasswordTextBox ui:field="password"></g:PasswordTextBox>
 				</td>

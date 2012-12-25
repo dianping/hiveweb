@@ -23,17 +23,17 @@
 		}
 	</ui:style>
 
-	<g:DockLayoutPanel height="600px">
+	<g:DockLayoutPanel height="700px">
 		<g:center>
 			<g:SplitLayoutPanel addStyleNames='{style.splitPanel}'>
 				<g:west size="200">
 					<g:VerticalPanel ui:field="shortcutPanel" width="100%" spacing="10" addStyleNames='{style.shortcutPanel}'>
 						<g:HTMLPanel>
-							<b>Select Database:</b>
+							<b>请选择数据库:</b>
 						</g:HTMLPanel>
 						<g:ListBox ui:field="dbListBox" visibleItemCount="1" width="10em" />
 						<g:HTMLPanel>
-							<b>Select Table:</b>
+							<b>请选择表:</b>
 						</g:HTMLPanel>
 						<g:ListBox ui:field="tableListBox" visibleItemCount="1"
 							width="10em" />
@@ -45,7 +45,7 @@
 					</g:ScrollPanel>
 				</g:north>
 				<g:center size="200">
-					<g:TextArea ui:field='tableDetail' height="100%" width="100%" text="table schema detail" readOnly="true"
+					<g:TextArea ui:field='tableDetail' height="100%" width="100%" text="表结构详细信息" readOnly="true"
 						addStyleNames='{style.tableDetail}' />
 				</g:center>
 			</g:SplitLayoutPanel>

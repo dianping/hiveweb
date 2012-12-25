@@ -26,9 +26,6 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -149,7 +146,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	void hqlSubmitButtonHandleClick(ClickEvent e) {
 		if ("".equals(hqlTextArea.getValue())) {
 			cusDialog
-					.setBodyContent("Please write your hql, it shoud not be empty!");
+					.setBodyContent("请填写查询语句,不能为空!");
 			cusDialog.center();
 			return;
 		}
@@ -165,7 +162,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		hqInputBo.setStoreResult(isStoreFile.getValue());
 
 		submitBut.setEnabled(false);
-		progressTextArea.setText("Executing Hive Query .........");
+		progressTextArea.setText("正在执行语句 .........");
 		hiveQueryService.getQueryResult(hqInputBo,
 				new AsyncCallback<HiveQueryOutputBo>() {
 
@@ -176,7 +173,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 						if (errorMessage != null && !errorMessage.equals("")) {
 							progressTextArea.setText(errorMessage);
 						} else {
-							progressTextArea.setText("Query Result Returned!");
+							progressTextArea.setText("查询结果已返回!");
 							removeCellTableAllColumns(cellTable, indexedColumns);
 							indexedColumns.clear();
 							int rowCount = result.getData().size();
@@ -214,7 +211,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 					public void onFailure(Throwable caught) {
 						submitBut.setEnabled(true);
 						progressTextArea
-								.setText("Something Wrong With The Query!");
+								.setText("查询出错了!");
 						caught.printStackTrace();
 					}
 				});
@@ -224,12 +221,12 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	void queryPlanSubmitButtonHandleClick(ClickEvent e) {
 		if ("".equals(hqlTextArea.getValue())) {
 			cusDialog
-					.setBodyContent("Please write your hql, it shoud not be empty!");
+					.setBodyContent("请填写语句，不能为空!");
 			cusDialog.center();
 			return;
 		}
 
-		progressTextArea.setText("Retrieving Hive Query Plan .........");
+		progressTextArea.setText("正在获取执行计划 .........");
 
 		hiveQueryService.getQueryPlan(getTokenid(), hqlTextArea.getValue(),
 				dbListBox.getItemText(dbListBox.getSelectedIndex()),
@@ -243,7 +240,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 					@Override
 					public void onFailure(Throwable caught) {
 						progressTextArea
-								.setText("Retrieving Hive Query Plain Failed !");
+								.setText("获取执行计划失败 !");
 						caught.printStackTrace();
 					}
 				});
@@ -265,7 +262,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		cellTable.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 		cellTable.setWidth("100%", false);
 
-		// constructSampleData();
+		constructSampleData();
 
 		provider.addDataDisplay(cellTable);
 		provider.updateRowCount(data.size(), true);
@@ -292,9 +289,9 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 			cellTable.addColumn(col, headers[i]);
 		}
 
-		for (int i = 0; i < 30; i++) {
-			data.add(new String[] { "", "", "", "", "", "" });
-		}
+//		for (int i = 0; i < 10; i++) {
+//			data.add(new String[] { "", "", "", "", "", "" });
+//		}
 		cellTable.setRowCount(data.size());
 	}
 }

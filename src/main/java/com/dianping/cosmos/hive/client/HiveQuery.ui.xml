@@ -32,19 +32,19 @@
 	<g:VerticalPanel spacing='3'>
 		<g:VerticalPanel width="100%" spacing='3'>
 			<g:HorizontalPanel>
-				<g:HTMLPanel>Databases:</g:HTMLPanel>
+				<g:HTMLPanel>数据库:</g:HTMLPanel>
 				<g:ListBox ui:field="dbListBox" visibleItemCount="1" />
 			</g:HorizontalPanel>
-			<g:HTMLPanel>Please write your hive query:</g:HTMLPanel>
+			<g:HTMLPanel>请填写查询语句:</g:HTMLPanel>
 			<g:HorizontalPanel spacing="3">
 				<g:TextArea ui:field="hqlTextArea" styleName="{style.hqlTextArea}" />
-				<g:TextArea ui:field="progressTextArea" text="Query Plan"
+				<g:TextArea ui:field="progressTextArea" text="执行计划信息"
 					styleName="{style.progressTextArea}"/>
 			</g:HorizontalPanel>
 			<g:HorizontalPanel spacing='3'>
-				<g:CheckBox ui:field="isStoreFile" text="Store To File" />
-				<g:Button ui:field="submitBut" text="Submit" width="120px" />
-				<g:Button ui:field="submitQPBut" text="Query Plan" width="120px" />
+				<g:CheckBox ui:field="isStoreFile" text="保存查询结果" value="true" />
+				<g:Button ui:field="submitBut" text="提交" width="120px" />
+				<g:Button ui:field="submitQPBut" text="执行计划" width="120px" />
 			</g:HorizontalPanel>
 		</g:VerticalPanel>
 		<g:VerticalPanel width="100%">

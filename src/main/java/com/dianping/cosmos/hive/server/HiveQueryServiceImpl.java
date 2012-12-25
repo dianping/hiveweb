@@ -35,7 +35,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 	private QueryHistoryService queryHistoryService;
 
 	@Autowired
-	@Qualifier("HiveCmdLineQueryEngine")
+	@Qualifier("JdbcQueryEngine")
 	private IQueryEngine queryEngine;
 	
 	@Autowired
@@ -43,6 +43,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public List<String> getDatabases(String tokenid) {
+		
 		return hiveJdbcClient.getDatabases(tokenid);
 	}
 

@@ -32,7 +32,7 @@ public class LoginComponent {
 	}
 
 	public void cleanup() {
-		Window.alert("Login Failed !");
+		Window.alert("登陆失败!");
 		LoginPage.removeCookies();
 		Window.Location.assign("/index.html");
 	}
