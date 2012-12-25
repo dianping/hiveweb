@@ -51,8 +51,10 @@ class StreamToFileHandler extends BaseStreamHandler{
 
 	public HiveQueryOutput getResult(){
 		try {
-			return OutputParser.getInstance().parse(
+			HiveQueryOutput result = OutputParser.getInstance().parse(
 					BasicUtils.openInputStream(new File(outFileLocation), gzip), limit);
+			result.setStoreFileLocation(outFileLocation);
+			return result;
 		} catch (IOException e) {
 			s_logger.error("Exception occurs in parsing output:", e);
 			return null;
