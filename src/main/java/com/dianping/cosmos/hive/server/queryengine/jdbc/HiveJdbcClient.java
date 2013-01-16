@@ -20,8 +20,8 @@ import org.apache.hadoop.security.Krb5Login;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.springframework.stereotype.Service;
 
+import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
-import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
 import com.dianping.cosmos.hive.shared.util.ReflectUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -32,11 +32,13 @@ import com.google.common.cache.RemovalNotification;
 public class HiveJdbcClient {
 	private static final Log logger = LogFactory.getLog(HiveJdbcClient.class);
 
+	private static final String HIVE_JDBC_DRIVER_CLASS = "org.apache.hadoop.hive.jdbc.HiveDriver";
+	
 	private static final int USER_SHOW_ROW_MAXIMUM_COUNT = 500;
+	private static final char FIELD_DELIMITED = '\t';
+	private static final char LINE_DELIMITED = '\n';
 
-	private static String driverName = "org.apache.hadoop.hive.jdbc.HiveDriver";
-
-	private static Cache<String, Connection> connCache = CacheBuilder
+	private static final Cache<String, Connection> connCache = CacheBuilder
 			.newBuilder().concurrencyLevel(4).maximumSize(100000)
 			.expireAfterWrite(24, TimeUnit.HOURS)
 			.removalListener(new RemovalListener<String, Connection>() {
@@ -49,7 +51,7 @@ public class HiveJdbcClient {
 
 			}).build();
 
-	private static Cache<String, UserGroupInformation> ugiCache = CacheBuilder
+	private static final Cache<String, UserGroupInformation> ugiCache = CacheBuilder
 			.newBuilder()
 			.concurrencyLevel(4)
 			.maximumSize(100000)
@@ -68,9 +70,9 @@ public class HiveJdbcClient {
 
 	static {
 		try {
-			Class.forName(driverName);
+			Class.forName(HIVE_JDBC_DRIVER_CLASS);
 		} catch (ClassNotFoundException cfe) {
-			logger.error("Hive Driver Not Found " + driverName, cfe);
+			logger.error("Hive Driver Not Found " + HIVE_JDBC_DRIVER_CLASS, cfe);
 		}
 	}
 
@@ -102,7 +104,7 @@ public class HiveJdbcClient {
 		List<String> dbs = new ArrayList<String>();
 		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
 		Connection conn = getConnection(ugi);
-		Statement stmt;
+		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("show databases");
@@ -121,7 +123,7 @@ public class HiveJdbcClient {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 		return dbs;
@@ -131,7 +133,7 @@ public class HiveJdbcClient {
 		List<String> tables = new ArrayList<String>();
 		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
 		Connection conn = getConnection(ugi);
-		Statement stmt;
+		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			stmt.execute("use " + database);
@@ -147,45 +149,44 @@ public class HiveJdbcClient {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 		return tables;
 	}
 
-	public List<TableSchemaBo> getTableSchema(String tokenid, String database,
+	public List<FieldSchemaBo> getTableSchema(String tokenid, String database,
 			String table) {
-		List<TableSchemaBo> tsbs = new ArrayList<TableSchemaBo>();
+		List<FieldSchemaBo> fieldSchemaList = new ArrayList<FieldSchemaBo>();
 		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
 		Connection conn = getConnection(ugi);
-		Statement stmt;
+		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			stmt.execute("use " + database);
 			ResultSet rs = stmt.executeQuery("desc " + table);
 			while (rs.next()) {
-				TableSchemaBo tsb = new TableSchemaBo();
-				tsb.setFieldName(rs.getString(1));
-				tsb.setFieldType(rs.getString(2));
-				tsb.setFieldComment(rs.getString(3));
-
-				if (logger.isDebugEnabled()) {
-					logger.debug("getTableSchema " + tsb);
-				}
-				tsbs.add(tsb);
+				FieldSchemaBo fieldSchema = new FieldSchemaBo();
+				fieldSchema.setFieldName(rs.getString(1));
+				fieldSchema.setFieldType(rs.getString(2));
+				fieldSchema.setFieldComment(rs.getString(3));
+				fieldSchemaList.add(fieldSchema);
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("field schema of table " + table + " is " + StringUtils.join(fieldSchemaList, ";"));
 			}
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
-			logger.error("getTableSchema failed", e);
+			logger.error("get table schema failed", e);
 		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
-		return tsbs;
+		return fieldSchemaList;
 	}
 
 	public String getTableSchemaDetail(String tokenid, String database,
@@ -193,7 +194,7 @@ public class HiveJdbcClient {
 		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
 		Connection conn = getConnection(ugi);
 		StringBuilder sb = new StringBuilder(1000);
-		Statement stmt;
+		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			stmt.execute("use " + database);
@@ -205,23 +206,27 @@ public class HiveJdbcClient {
 					if (StringUtils.isBlank(rs.getString(i))) {
 						continue;
 					} else {
-						sb.append(rs.getString(i)).append('\t');
+						if (i < columnCount) {
+							sb.append(rs.getString(i)).append(FIELD_DELIMITED);
+						} else {
+							sb.append(rs.getString(i));
+						}
 					}
 				}
-				sb.append('\n');
+				sb.append(LINE_DELIMITED);
 			}
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
 			logger.error(
 					String.format(
-							"getTableSchemaDetail failed , tokenid:%s, database:%s, table:%s",
+							"get table schema detail failed , tokenid:%s, database:%s, table:%s",
 							tokenid, database, table), e);
 		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 		return sb.toString();
@@ -232,7 +237,7 @@ public class HiveJdbcClient {
 		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
 		Connection conn = getConnection(ugi);
 		StringBuilder sb = new StringBuilder(1000);
-		Statement stmt;
+		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			stmt.executeQuery("use " + database);
@@ -244,8 +249,13 @@ public class HiveJdbcClient {
 				if (fetchedRows == null || fetchedRows.size() == 0) {
 					sb.append("something wrong with hive query");
 				} else {
-					for (String row : fetchedRows) {
-						sb.append(row).append("\n");
+					int fetchedRowsSize = fetchedRows.size();
+					for (int i = 0; i < fetchedRowsSize; i++) {
+						if (i < fetchedRowsSize - 1) {
+							sb.append(fetchedRows.get(i)).append(LINE_DELIMITED);
+						}else {
+							sb.append(fetchedRows.get(i));
+						}
 					}
 				}
 			} else {
@@ -254,19 +264,19 @@ public class HiveJdbcClient {
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
-			sb.append(e.toString());
+			sb.append(e.getMessage());
 			logger.error("getQueryPlan failed, dbname:" + database + " hql:"
 					+ hql, e);
 		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 		
 		if (logger.isDebugEnabled()){
-			logger.debug("dbname:" + database + " query plan for hql:" + hql
+			logger.debug("dbname:" + database + ", the query plan of hql:" + hql
 					+ " is " + sb.toString());
 		}
 		return sb.toString();
@@ -278,7 +288,7 @@ public class HiveJdbcClient {
 		HiveQueryOutputBo hqo = new HiveQueryOutputBo(); 
 		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
 		Connection conn = getConnection(ugi);
-		Statement stmt;
+		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			stmt.executeQuery("use " + database);
@@ -289,13 +299,13 @@ public class HiveJdbcClient {
 
 			StringBuilder sb = new StringBuilder(200);
 			for (int i = 1; i <= columnCount; i++) {
-				columnNames[i] = rsm.getColumnName(i);
-				if (logger.isDebugEnabled()) {
-					sb.append(rsm.getColumnName(i)).append("\t")
-							.append(rsm.getColumnTypeName(i)).append("\n");
+				sb.append(rsm.getColumnName(i));
+				if (i < columnCount) {
+					sb.append(FIELD_DELIMITED);
+				}else {
+					sb.append(LINE_DELIMITED);
 				}
 			}
-
 			if (logger.isDebugEnabled()) {
 				logger.debug("resultset meta data is:" + sb.toString());
 			}
@@ -305,8 +315,10 @@ public class HiveJdbcClient {
 			int currentRow = 0;
 
 			BufferedWriter bw = null;
-			if (isStoreFile && !"".equals(resultLocation)) {
+			if (isStoreFile && !"".equals(resultLocation)) { 
 				bw = DataFileStore.openOutputStream(resultLocation);
+				// Write Resultset field names to the first line of result file
+				bw.write(sb.toString());
 			}
 			logger.info("isStoreFile:" + isStoreFile + " storeFilePath:"
 					+ resultLocation);
@@ -322,22 +334,23 @@ public class HiveJdbcClient {
 						oneRowData[i - 1] = value;
 						if (isStoreFile) {
 							bw.write(value);
-							if (i < columnCount)
-								bw.write('\t');
+							if (i < columnCount) {
+								bw.write(FIELD_DELIMITED);
+							} else {
+								bw.write(LINE_DELIMITED);
+							}
 						}
 					}
 					hqo.addOneRow(oneRowData);
-					
-					if (isStoreFile) {
-						bw.write('\n');
-					}
 				} else if (isStoreFile) {
 					for (int i = 1; i <= columnCount; i++) {
 						bw.write(rs.getString(i));
-						if (i < columnCount)
-							bw.write('\t');
+						if (i < columnCount) {
+							bw.write(FIELD_DELIMITED);
+						} else {
+							bw.write(LINE_DELIMITED);
+						}
 					}
-					bw.write('\n');
 				} else {
 					break;
 				}
@@ -351,13 +364,13 @@ public class HiveJdbcClient {
 			stmt.close();
 		} catch (Exception e) {
 			hqo.setErrorMsg(e.getMessage());
-			logger.error("getQueryResult failed, db:" + database + " hql:"
+			logger.error("get query result failed, db:" + database + " hql:"
 					+ hql, e);
 		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 		return hqo;

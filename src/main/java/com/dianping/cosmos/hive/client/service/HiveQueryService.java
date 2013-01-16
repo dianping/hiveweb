@@ -6,7 +6,7 @@ import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
-import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
+import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -17,7 +17,7 @@ public interface HiveQueryService extends RemoteService {
 	
 	public List<String> getTables(String tokenid, String database);
 	
-	public List<TableSchemaBo> getTableSchema(String tokenid, String database, String table);
+	public List<FieldSchemaBo> getTableSchema(String tokenid, String database, String table);
 	
 	public String getTableSchemaDetail(String tokenid, String database, String table);
 	

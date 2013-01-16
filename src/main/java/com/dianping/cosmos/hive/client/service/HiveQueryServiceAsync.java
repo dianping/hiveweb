@@ -6,7 +6,7 @@ import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
-import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
+import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -17,7 +17,7 @@ public interface HiveQueryServiceAsync {
 	
 	public void getTables(String tokenid, String database, AsyncCallback<List<String>> callback);
 	
-	public void getTableSchema(String tokenid, String database, String table, AsyncCallback<List<TableSchemaBo>> callback);
+	public void getTableSchema(String tokenid, String database, String table, AsyncCallback<List<FieldSchemaBo>> callback);
 	
 	public void getTableSchemaDetail(String tokenid, String database, String table, AsyncCallback<String> callback);
 	

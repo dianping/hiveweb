@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.gwtmultipage.client.UrlPatternEntryPoint;
 
-import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
+import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.dianping.cosmos.hive.client.css.TableResources;
 import com.dianping.cosmos.hive.client.service.HiveQueryServiceAsync;
 import com.dianping.cosmos.hive.client.service.LoginServiceAsync;
@@ -37,7 +37,7 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	@UiField
 	ListBox tableListBox;
 	@UiField(provided = true)
-	CellTable<TableSchemaBo> tableSchemaTable;
+	CellTable<FieldSchemaBo> tableSchemaTable;
 	@UiField
 	TextArea tableDetail;
 
@@ -83,31 +83,31 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	}
 
 	private void initialize() {
-		tableSchemaTable = new CellTable<TableSchemaBo>(15,
+		tableSchemaTable = new CellTable<FieldSchemaBo>(15,
 				GWT.<TableResources> create(TableResources.class));
 		tableSchemaTable
 				.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
-		TextColumn<TableSchemaBo> fieldNameColumn = new TextColumn<TableSchemaBo>() {
+		TextColumn<FieldSchemaBo> fieldNameColumn = new TextColumn<FieldSchemaBo>() {
 			@Override
-			public String getValue(TableSchemaBo ts) {
+			public String getValue(FieldSchemaBo ts) {
 				return ts.getFieldName();
 			}
 		};
 		tableSchemaTable.addColumn(fieldNameColumn, "字段名");
 
-		TextColumn<TableSchemaBo> fieldTypeColumn = new TextColumn<TableSchemaBo>() {
+		TextColumn<FieldSchemaBo> fieldTypeColumn = new TextColumn<FieldSchemaBo>() {
 
 			@Override
-			public String getValue(TableSchemaBo ts) {
+			public String getValue(FieldSchemaBo ts) {
 				return ts.getFieldType();
 			}
 		};
 		tableSchemaTable.addColumn(fieldTypeColumn, "字段类型");
 
-		TextColumn<TableSchemaBo> fieldCommentColumn = new TextColumn<TableSchemaBo>() {
+		TextColumn<FieldSchemaBo> fieldCommentColumn = new TextColumn<FieldSchemaBo>() {
 
 			@Override
-			public String getValue(TableSchemaBo ts) {
+			public String getValue(FieldSchemaBo ts) {
 				return ts.getFieldComment();
 			}
 		};
@@ -185,10 +185,10 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 				.getSelectedIndex());
 		if (!dbName.equals("") && !tableName.equals("")) {
 			hiveQueryService.getTableSchema(getTokenid(), dbName, tableName,
-					new AsyncCallback<List<TableSchemaBo>>() {
+					new AsyncCallback<List<FieldSchemaBo>>() {
 
 						@Override
-						public void onSuccess(List<TableSchemaBo> result) {
+						public void onSuccess(List<FieldSchemaBo> result) {
 							if (result != null && result.size() > 0){
 								hiveQueryService.getTableSchemaDetail(getTokenid(), dbName, tableName,
 										new AsyncCallback<String>() {

@@ -14,7 +14,7 @@ import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
-import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
+import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.dianping.cosmos.hive.client.service.HiveQueryService;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
 import com.dianping.cosmos.hive.server.queryengine.cmdline.HiveCmdLineQueryEngine;
@@ -129,7 +129,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<TableSchemaBo> getTableSchema(String tokenid, String database,
+	public List<FieldSchemaBo> getTableSchema(String tokenid, String database,
 			String table) {
 		return hiveJdbcClient.getTableSchema(tokenid, database, table);
 	}
