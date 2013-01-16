@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
+import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
 import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -24,12 +25,16 @@ public interface HiveQueryService extends RemoteService {
 	
 	public HiveQueryOutputBo getQueryResult(HiveQueryInputBo input);
 	
-	public String getQueryStatus(String username, long timestamp);
+	public String getQueryStatus(String queryId);
 	
-	public void stopQuery(String username, long timestamp);
+	public Boolean stopQuery(String queryId);
 	
 	public String getQueryPlan(String tokenid, String hql, String database);
 	
 	public List<QueryHistoryBo> getQueryHistory(String username);
+	
+	public Boolean saveQuery(String username, String queryName, String hql);
+	
+	public List<QueryFavoriteBo> getFavoriteQuery(String username);
 	
 }

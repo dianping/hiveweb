@@ -97,7 +97,7 @@ public class HomePage extends LoginComponent implements EntryPoint {
 		tableSchemaVP.add(introTS);
 		tableSchemaCap.add(tableSchemaVP);
 
-		final HTML introQH = new HTML(messages.homepage_TableSchemaDesc(), true);
+		final HTML introQH = new HTML(messages.homepage_QueryHistoryDesc(), true);
 		final VerticalPanel queryHistoryVP = new VerticalPanel();
 		queryHistoryVP.add(introQH);
 		queryHistoryCap.add(queryHistoryVP);

@@ -6,14 +6,30 @@ abstract class BaseStreamHandler implements IStreamHandler{
 	
 	protected InputStream is;
 	
-	protected int limit;
+	protected Process proc;
+	
+	protected int showLimit;
+	
+	protected Boolean killStatus;
 
 	public void setInputStream(InputStream is){
 		this.is = is;
 	}
 	
-	public void setLimit(int limit){
-		this.limit = limit;
+	public void setShowLimit(int limit){
+		this.showLimit = limit;
+	}
+	
+	public void setExecuteProcess(Process proc){
+		this.proc = proc;
+	}
+	
+	public Boolean getProcessKillStatus() {
+		return killStatus;
+	}
+	
+	public void setProcessKillStatus(Boolean killStatus) {
+		this.killStatus = killStatus;
 	}
 
 }

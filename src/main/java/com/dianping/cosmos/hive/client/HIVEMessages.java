@@ -37,6 +37,10 @@ public interface HIVEMessages extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("查看Hive数据库和表结构详细信息")
 	@Key("homepage.TableSchemaDesc")
 	String homepage_TableSchemaDesc();
+	
+	@DefaultMessage("查看用户提交过的查询历史和下载结果文件")
+	@Key("homepage.QueryHistoryDesc")
+	String homepage_QueryHistoryDesc();
 
 	@DefaultMessage("This web site is for users to execute ad-hoc hive querys and download query result files directly and may change in response to your feedback.")
 	@Key("homepage.info")

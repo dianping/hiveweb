@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
+import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
 import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
 import com.google.gwt.core.client.GWT;
@@ -22,13 +23,17 @@ public interface HiveQueryServiceAsync {
 	
 	public void getQueryResult(HiveQueryInputBo input, AsyncCallback<HiveQueryOutputBo> asyncCallback);
 	
-	public void getQueryStatus(String username, long timestamp, AsyncCallback<String> callback);
+	public void getQueryStatus(String queryId, AsyncCallback<String> callback);
 
-	public void stopQuery(String username, long timestamp, AsyncCallback<Void> callback);
+	public void stopQuery(String queryId, AsyncCallback<Boolean> callback);
 	
 	public void getQueryPlan(String tokenid, String hql, String database, AsyncCallback<String> callback);
 	
 	public void getQueryHistory(String username, AsyncCallback<List<QueryHistoryBo>> callback);
+	
+	public void saveQuery(String username, String queryName, String hql, AsyncCallback<Boolean> callback);
+	
+	public void getFavoriteQuery(String username, AsyncCallback<List<QueryFavoriteBo>> callback);
 	
 	public static final class Util {
 		private static HiveQueryServiceAsync instance;

@@ -5,13 +5,14 @@
 		.container {
 			width: 100%;
 		}
+		
 		.content {
-			width: 250px;
+			width: 400px;
 			margin: 0 auto;
 		}
 	</ui:style>
 	<g:HTMLPanel addStyleNames="{style.content}">
-		<h2>Hive Web登陆</h2>
+		<h2>Hive Web(请使用线上hadoop账号登陆)</h2>
 		<g:SimplePanel ui:field="message"></g:SimplePanel>
 		<table>
 			<tr>

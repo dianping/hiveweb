@@ -1,5 +1,6 @@
 package com.dianping.cosmos.hive.client.bo;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,8 +11,10 @@ public class HiveQueryOutputBo implements IsSerializable {
 	private String[] fieldSchema;
 	private List<String[]> data;
 	private String errorMsg;
+	private String resultFileAbsolutePath;
 	
 	public HiveQueryOutputBo(){
+		data = new ArrayList<String[]>();
 	}
 	
 	public long getExecTime() {
@@ -28,6 +31,10 @@ public class HiveQueryOutputBo implements IsSerializable {
 
 	public void setFieldSchema(String[] fieldSchema) {
 		this.fieldSchema = fieldSchema;
+	}
+	
+	public boolean addOneRow(String[] row) {
+		return data.add(row);
 	}
 
 	public List<String[]> getData() {
@@ -46,11 +53,19 @@ public class HiveQueryOutputBo implements IsSerializable {
 		this.errorMsg = errorMsg;
 	}
 
-	@Override
-	public String toString() {
-		return "HiveQueryOutput [execTime=" + execTime + ", fieldSchema="
-				+ Arrays.toString(fieldSchema) + ", data=" + data
-				+ ", errorMsg=" + errorMsg + "]";
+	public String getResultFileAbsolutePath() {
+		return resultFileAbsolutePath;
 	}
 
+	public void setResultFileAbsolutePath(String resultFileAbsolutePath) {
+		this.resultFileAbsolutePath = resultFileAbsolutePath;
+	}
+
+	@Override
+	public String toString() {
+		return "HiveQueryOutputBo [execTime=" + execTime + ", fieldSchema="
+				+ Arrays.toString(fieldSchema) + ", data=" + data
+				+ ", errorMsg=" + errorMsg + ", resultFileName="
+				+ resultFileAbsolutePath + "]";
+	}
 }

@@ -75,7 +75,7 @@ public class BasicUtils {
 		}
 	}
 
-	private static OutputStream openOutputStream(File file, boolean append, boolean gzip) throws IOException {
+	public static OutputStream openOutputStream(File file, boolean append, boolean gzip) throws IOException {
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				throw new IOException("File '" + file + "' exists but is a directory");

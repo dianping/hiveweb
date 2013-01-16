@@ -2,6 +2,7 @@ package com.dianping.cosmos.hive.client;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.gwtmultipage.client.UrlPatternEntryPoint;
 
@@ -34,6 +35,7 @@ import com.google.gwt.view.client.HasData;
 public class QueryHistory extends LoginComponent implements EntryPoint {
 	private static QueryHistoryUiBinder uiBinder = GWT
 			.create(QueryHistoryUiBinder.class);
+	private static Logger logger = Logger.getLogger("QueryHistory");
 
 	interface QueryHistoryUiBinder extends UiBinder<Widget, QueryHistory> {
 	}
@@ -136,14 +138,11 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 							String value) {
 						String fileLocation = object.getFilename();
 						GWT.log("Downloading " + fileLocation);
-						if (fileLocation != null
-								&& fileLocation.indexOf('/') > 0) {
-							String fileName = fileLocation
-									.substring(fileLocation.lastIndexOf('/') + 1);
-							String link = GWT.getModuleBaseURL()
-									+ "myfiledownload/" + fileName;
-							Window.open(link, "_blank", "");
-						}
+						String fileName = fileLocation.substring(fileLocation
+								.lastIndexOf('/') + 1);
+						String link = GWT.getModuleBaseURL()
+								+ "myfiledownload/" + fileName;
+						Window.open(link, "_blank", "");
 					}
 				});
 		cellTable.addColumn(downloadColumn, "下载结果文件");
@@ -176,8 +175,8 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 										+ display.getVisibleRange().getLength();
 								end = end >= result.size() ? result.size()
 										: end;
-								List<QueryHistoryBo> sub = result
-										.subList(start, end);
+								List<QueryHistoryBo> sub = result.subList(
+										start, end);
 								updateRowData(start, sub);
 							}
 						};
@@ -193,8 +192,9 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				});
 
 	}
-	
-	public void initQueryHistoryList(AsyncDataProvider<QueryHistoryBo> dataProvider) {
+
+	public void initQueryHistoryList(
+			AsyncDataProvider<QueryHistoryBo> dataProvider) {
 		dataProvider.addDataDisplay(cellTable);
 	}
 

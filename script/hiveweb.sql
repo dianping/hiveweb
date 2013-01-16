@@ -16,3 +16,12 @@ CREATE TABLE `HW_UserLogin` (
   KEY `Index_UserName` (`username`)
 ) ENGINE=MYISAM AUTO_INCREMENT=352 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
 
+CREATE TABLE `HW_QueryFavorite` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `username` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `queryname` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `hql` varchar(10000) COLLATE utf8_unicode_ci NOT NULL,
+  `addtime` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `IDX_USERNAME_QUERYNAME` (`username`,`queryname`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci

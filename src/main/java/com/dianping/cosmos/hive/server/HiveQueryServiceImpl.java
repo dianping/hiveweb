@@ -12,14 +12,18 @@ import org.springframework.stereotype.Service;
 
 import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
+import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
 import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
 import com.dianping.cosmos.hive.client.service.HiveQueryService;
-import com.dianping.cosmos.hive.server.queryengine.HiveQueryInput;
-import com.dianping.cosmos.hive.server.queryengine.HiveQueryOutput;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
+import com.dianping.cosmos.hive.server.queryengine.cmdline.HiveCmdLineQueryEngine;
+import com.dianping.cosmos.hive.server.queryengine.jdbc.DataFileStore;
 import com.dianping.cosmos.hive.server.queryengine.jdbc.HiveJdbcClient;
+import com.dianping.cosmos.hive.server.queryengine.jdbc.JdbcQueryEngine;
+import com.dianping.cosmos.hive.server.store.domain.QueryFavorite;
 import com.dianping.cosmos.hive.server.store.domain.QueryHistory;
+import com.dianping.cosmos.hive.server.store.service.QueryFavoriteService;
 import com.dianping.cosmos.hive.server.store.service.QueryHistoryService;
 import com.dianping.cosmos.hive.shared.util.StringUtils;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -33,30 +37,33 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 
 	@Autowired
 	private QueryHistoryService queryHistoryService;
+	
+	@Autowired
+	private QueryFavoriteService queryFavoriteService;
 
 	@Autowired
-	@Qualifier("JdbcQueryEngine")
+	@Qualifier("HiveCmdLineQueryEngine")
 	private IQueryEngine queryEngine;
-	
+
 	@Autowired
 	private HiveJdbcClient hiveJdbcClient;
 
 	@Override
 	public List<String> getDatabases(String tokenid) {
-		
+
 		return hiveJdbcClient.getDatabases(tokenid);
 	}
 
 	@Override
 	public List<String> getLatestNQuery() {
 		List<String> hqls = queryHistoryService.selectLastNQuery();
-		
-		if (logger.isDebugEnabled()){
+
+		if (logger.isDebugEnabled()) {
 			for (String string : hqls) {
 				logger.debug(string);
 			}
 		}
-		
+
 		if (hqls != null && hqls.size() > 0) {
 			return hqls;
 		}
@@ -65,41 +72,55 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public HiveQueryOutputBo getQueryResult(HiveQueryInputBo input) {
-		if (input == null)
+		if (input == null) {
 			return null;
-		HiveQueryOutput result = queryEngine.getQueryResult(new HiveQueryInput(
-				input));
-		
-		// insert query history DB
-		String resultLocation = "";
-		if (result.getStoreFileLocation() != null){
-			resultLocation = result.getStoreFileLocation(); 
 		}
-		
+
+		String resultLocation = "";
+		//if (input.isStoreResult()) {
+			resultLocation = DataFileStore.getStoreFileAbsolutePath(
+					input.getTokenid(), input.getUsername(),
+					input.getDatabase(), input.getHql(), input.getTimestamp(),
+					input.getQueryid());
+		//}
+		input.setResultLocation(resultLocation);
+
+		HiveQueryOutputBo output = new HiveQueryOutputBo();
+		if (queryEngine instanceof JdbcQueryEngine) {
+			output = queryEngine.getQueryResult(input);
+		} else if (queryEngine instanceof HiveCmdLineQueryEngine) {
+			output = queryEngine.getQueryResult(input);
+		} else {
+			logger.error("No such queryEngine implemented "
+					+ queryEngine.getClass());
+		}
+
+		// insert query history DB
+		String resultFileLocation = "";
+		if (!org.apache.commons.lang.StringUtils.isEmpty(output
+				.getResultFileAbsolutePath())) {
+			resultFileLocation = output.getResultFileAbsolutePath();
+		}
+
 		QueryHistory history = new QueryHistory();
 		history.setHql(input.getHql());
 		history.setUsername(input.getUsername());
 		history.setAddtime(new Date(input.getTimestamp()));
-		history.setFilename(resultLocation);
+		history.setFilename(resultFileLocation);
 		queryHistoryService.insertQueryHistory(history);
-		
-		HiveQueryOutputBo bo = result.toHiveQueryOutputBo();
-		return bo;
+
+		return output;
 	}
 
 	@Override
-	public String getQueryStatus(String username, long timestamp) {
-		return queryEngine.getQueryStatus(username, timestamp);
-	}
-
-	@Override
-	public void stopQuery(String username, long timestamp) {
-		queryEngine.stopQuery(username, timestamp);
+	public String getQueryStatus(String queryId) {
+		return queryEngine.getQueryStatus(queryId);
 	}
 
 	@Override
 	public String getQueryPlan(String tokenid, String hql, String database) {
-		return hiveJdbcClient.getQueryPlan(tokenid, StringUtils.preprocessQuery(hql), database);
+		return hiveJdbcClient.getQueryPlan(tokenid,
+				StringUtils.preprocessQuery(hql), database);
 	}
 
 	@Override
@@ -121,18 +142,52 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public List<QueryHistoryBo> getQueryHistory(String username) {
-		List<QueryHistoryBo> qhbs  = new ArrayList<QueryHistoryBo>();
-		
-		List<QueryHistory> qhs = queryHistoryService.selectQueryHistoryByUsername(username);
+		List<QueryHistoryBo> qhbs = new ArrayList<QueryHistoryBo>();
+
+		List<QueryHistory> qhs = queryHistoryService
+				.selectQueryHistoryByUsername(username);
 		for (QueryHistory qh : qhs) {
 			QueryHistoryBo o = new QueryHistoryBo();
 			o.setUsername(qh.getUsername());
 			o.setAddtime(qh.getAddtime());
 			o.setHql(qh.getHql());
 			o.setFilename(qh.getFilename());
-			
+
 			qhbs.add(o);
 		}
 		return qhbs;
+	}
+
+	@Override
+	public Boolean stopQuery(String queryId) {
+		return queryEngine.stopQuery(queryId);
+	}
+
+	@Override
+	public Boolean saveQuery(String username, String queryName, String hql) {
+		QueryFavorite qf = new QueryFavorite();
+		qf.setUsername(username);
+		qf.setQueryName(queryName);
+		qf.setHql(hql);
+		qf.setAddtime(new Date());
+		queryFavoriteService.insertQueryFavorite(qf);
+		return true;
+	}
+
+	@Override
+	public List<QueryFavoriteBo> getFavoriteQuery(
+			String username) {
+		List<QueryFavorite> queryFavs = queryFavoriteService.selectQueryFavoriteByUsername(username);
+		List<QueryFavoriteBo> queryFavsBos = null;
+		if (queryFavs != null && queryFavs.size() > 0) {
+			queryFavsBos = new ArrayList<QueryFavoriteBo>(queryFavs.size()); 
+			for (QueryFavorite qf : queryFavs) {
+				QueryFavoriteBo q = new QueryFavoriteBo();
+				q.setQueryName(qf.getQueryName());
+				q.setHql(qf.getHql());
+				queryFavsBos.add(q);
+			}
+		}
+		return queryFavsBos;
 	}
 }

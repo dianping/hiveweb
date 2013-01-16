@@ -20,8 +20,8 @@ import org.apache.hadoop.security.Krb5Login;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.springframework.stereotype.Service;
 
+import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
-import com.dianping.cosmos.hive.server.queryengine.HiveQueryOutput;
 import com.dianping.cosmos.hive.shared.util.ReflectUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -32,7 +32,7 @@ import com.google.common.cache.RemovalNotification;
 public class HiveJdbcClient {
 	private static final Log logger = LogFactory.getLog(HiveJdbcClient.class);
 
-	private static final int USER_SHOW_ROW_MAXIMUM_COUNT = 300;
+	private static final int USER_SHOW_ROW_MAXIMUM_COUNT = 500;
 
 	private static String driverName = "org.apache.hadoop.hive.jdbc.HiveDriver";
 
@@ -237,7 +237,7 @@ public class HiveJdbcClient {
 			stmt = conn.createStatement();
 			stmt.executeQuery("use " + database);
 			stmt.setFetchSize(Integer.MAX_VALUE);
-			ResultSet rs = stmt.executeQuery("explain " + hql);
+			ResultSet rs = stmt.executeQuery("explain extended " + hql);
 			if (rs.next()) {
 				Object value = ReflectUtils.getFieldValue(rs, "fetchedRows");
 				List<String> fetchedRows = (List<String>) value;
@@ -249,7 +249,7 @@ public class HiveJdbcClient {
 					}
 				}
 			} else {
-				logger.error("execute 'explain hql' failed, hql:" + hql);
+				logger.error("execute 'explain extended hql' failed, hql:" + hql);
 			}
 			rs.close();
 			stmt.close();
@@ -272,10 +272,10 @@ public class HiveJdbcClient {
 		return sb.toString();
 	}
 
-	public HiveQueryOutput getQueryResult(String tokenid, String username,
-			String database, String hql, int resultLimit, Boolean isStoreFile,
+	public HiveQueryOutputBo getQueryResult(String tokenid, String username,
+			String database, String hql, int resultLimit, Boolean isStoreFile, String resultLocation, 
 			long timestamp) {
-		HiveQueryOutput hqo = new HiveQueryOutput();
+		HiveQueryOutputBo hqo = new HiveQueryOutputBo(); 
 		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
 		Connection conn = getConnection(ugi);
 		Statement stmt;
@@ -285,11 +285,11 @@ public class HiveJdbcClient {
 			ResultSet rs = stmt.executeQuery(hql);
 			ResultSetMetaData rsm = rs.getMetaData();
 			int columnCount = rsm.getColumnCount();
-			List<String> columnNames = new ArrayList<String>(columnCount);
+			String[] columnNames = new String[columnCount];
 
 			StringBuilder sb = new StringBuilder(200);
 			for (int i = 1; i <= columnCount; i++) {
-				columnNames.add(rsm.getColumnName(i));
+				columnNames[i] = rsm.getColumnName(i);
 				if (logger.isDebugEnabled()) {
 					sb.append(rsm.getColumnName(i)).append("\t")
 							.append(rsm.getColumnTypeName(i)).append("\n");
@@ -299,42 +299,35 @@ public class HiveJdbcClient {
 			if (logger.isDebugEnabled()) {
 				logger.debug("resultset meta data is:" + sb.toString());
 			}
-
-			hqo.setTitleList(columnNames);
+			hqo.setFieldSchema(columnNames);
 			int maxShowRowCount = resultLimit < USER_SHOW_ROW_MAXIMUM_COUNT ? resultLimit
 					: USER_SHOW_ROW_MAXIMUM_COUNT;
 			int currentRow = 0;
 
-			String storeFilePath = "";
 			BufferedWriter bw = null;
-			if (isStoreFile) {
-				storeFilePath = DataFileStore.getStoreFilePath(tokenid,
-						username, database, hql, timestamp);
-				bw = DataFileStore.openOutputStream(storeFilePath);
+			if (isStoreFile && !"".equals(resultLocation)) {
+				bw = DataFileStore.openOutputStream(resultLocation);
 			}
 			logger.info("isStoreFile:" + isStoreFile + " storeFilePath:"
-					+ storeFilePath);
-
-			if (!StringUtils.isBlank(storeFilePath)) {
-				hqo.setStoreFileLocation(storeFilePath);
-			}
+					+ resultLocation);
+			hqo.setResultFileAbsolutePath(resultLocation);
 
 			while (rs.next()
 					&& currentRow < DataFileStore.FILE_STORE_LINE_LIMIT) {
 				if (currentRow < maxShowRowCount) {
-					List<String> oneRowData = new ArrayList<String>();
+					String[] oneRowData = new String[columnCount];
 					for (int i = 1; i <= columnCount; i++) {
 						String value = rs.getString(i) == null ? "" : rs
 								.getString(i);
-						oneRowData.add(value);
+						oneRowData[i - 1] = value;
 						if (isStoreFile) {
 							bw.write(value);
 							if (i < columnCount)
 								bw.write('\t');
 						}
 					}
-					hqo.addRow(oneRowData);
-
+					hqo.addOneRow(oneRowData);
+					
 					if (isStoreFile) {
 						bw.write('\n');
 					}
@@ -357,7 +350,7 @@ public class HiveJdbcClient {
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {
-			hqo.setErrorMessage(e.toString());
+			hqo.setErrorMsg(e.getMessage());
 			logger.error("getQueryResult failed, db:" + database + " hql:"
 					+ hql, e);
 		} finally {
