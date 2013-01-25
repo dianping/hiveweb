@@ -7,7 +7,7 @@ import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryInput;
 import com.dianping.cosmos.hive.server.queryengine.HiveQueryOutput;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
-import com.dianping.cosmos.hive.shared.util.StringUtils;
+import com.dianping.cosmos.hive.shared.util.StrUtils;
 
 public class JdbcQueryEngine implements IQueryEngine {
 
@@ -23,7 +23,7 @@ public class JdbcQueryEngine implements IQueryEngine {
 	public HiveQueryOutputBo getQueryResult(HiveQueryInputBo input) {
 		String tokenid = input.getTokenid();
 		String username = input.getUsername();
-		String hql = StringUtils.preprocessQuery(input.getHql());
+		String hql = StrUtils.preprocessQuery(input.getHql());
 		String database = input.getDatabase();
 		int resultLimit = input.getResultLimit();
 		Boolean isStoreFile = input.isStoreResult();

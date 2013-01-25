@@ -7,6 +7,7 @@ import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
 import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
+import com.dianping.cosmos.hive.client.bo.ResultStatusBo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -34,6 +35,8 @@ public interface HiveQueryServiceAsync {
 	public void saveQuery(String username, String queryName, String hql, AsyncCallback<Boolean> callback);
 	
 	public void getFavoriteQuery(String username, AsyncCallback<List<QueryFavoriteBo>> callback);
+	
+	public void createTable(String tokenid, String hql, AsyncCallback<ResultStatusBo> callback);
 	
 	public static final class Util {
 		private static HiveQueryServiceAsync instance;

@@ -1,15 +1,17 @@
 package com.dianping.cosmos.hive.client.widget;
 
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.Widget;
 
-public class AutoCompleteTextArea extends TextArea implements KeyboardListener,
-		ChangeListener {
+public class AutoCompleteTextArea extends TextArea implements KeyUpHandler,
+	ChangeHandler {
 
 	protected PopupPanel choicesPopup = new PopupPanel(true);
 	protected ListBox choices = new ListBox();
@@ -27,13 +29,11 @@ public class AutoCompleteTextArea extends TextArea implements KeyboardListener,
 	 */
 	public AutoCompleteTextArea() {
 		super();
-		this.addKeyboardListener(this);
-		choices.addChangeListener(this);
+		this.addKeyUpHandler(this);
+		choices.addChangeHandler(this);
 		this.setStyleName("AutoCompleteTextArea");
-
 		choicesPopup.add(choices);
 		choicesPopup.addStyleName("AutoCompleteChoices");
-
 		choices.setStyleName("list");
 	}
 
@@ -59,48 +59,59 @@ public class AutoCompleteTextArea extends TextArea implements KeyboardListener,
 		return this.items;
 	}
 
-	public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+	// add selected item to textarea
+	protected void complete() {
+		if (choices.getItemCount() > 0) {
+			String text = this.getText();
+			text = text.substring(0, text.length() - typedText.length() - 1);
+			text += choices.getItemText(choices.getSelectedIndex());
+			this.setText(text);
+			this.setFocus(true);
+		}
+
+		choices.clear();
+		choicesPopup.hide();
 	}
 
-	public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+	@Override
+	public void onChange(ChangeEvent event) {
+		complete();
 	}
 
-	public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-		if (keyCode == KEY_DOWN) {
+	@Override
+	public void onKeyUp(KeyUpEvent event) {
+		int keyCode = event.getNativeKeyCode();
+		if (keyCode == KeyCodes.KEY_DOWN) {
 			int selectedIndex = choices.getSelectedIndex();
 			selectedIndex++;
 			if (selectedIndex > choices.getItemCount()) {
 				selectedIndex = 0;
 			}
 			choices.setSelectedIndex(selectedIndex);
-
 			return;
 		}
 
-		if (keyCode == KEY_UP) {
+		if (keyCode == KeyCodes.KEY_UP) {
 			int selectedIndex = choices.getSelectedIndex();
 			selectedIndex--;
 			if (selectedIndex < 0) {
 				selectedIndex = choices.getItemCount();
 			}
 			choices.setSelectedIndex(selectedIndex);
-
 			return;
 		}
 
-		if (keyCode == KEY_ENTER) {
+		if (keyCode == KeyCodes.KEY_ENTER) {
 			if (visible) {
 				complete();
 			}
-
 			return;
 		}
 
-		if (keyCode == KEY_ESCAPE) {
+		if (keyCode == KeyCodes.KEY_ESCAPE) {
 			choices.clear();
 			choicesPopup.hide();
 			visible = false;
-
 			return;
 		}
 
@@ -119,7 +130,7 @@ public class AutoCompleteTextArea extends TextArea implements KeyboardListener,
 			choices.clear();
 
 			for (int i = 0; i < matches.length; i++) {
-				choices.addItem((String) matches[i]);
+				choices.addItem(matches[i]);
 			}
 
 			// if there is only one match and it is what is in the
@@ -149,23 +160,5 @@ public class AutoCompleteTextArea extends TextArea implements KeyboardListener,
 			choicesPopup.hide();
 			visible = false;
 		}
-	}
-
-	public void onChange(Widget sender) {
-		complete();
-	}
-
-	// add selected item to textarea
-	protected void complete() {
-		if (choices.getItemCount() > 0) {
-			String text = this.getText();
-			text = text.substring(0, text.length() - typedText.length() - 1);
-			text += choices.getItemText(choices.getSelectedIndex());
-			this.setText(text);
-			this.setFocus(true);
-		}
-
-		choices.clear();
-		choicesPopup.hide();
 	}
 }

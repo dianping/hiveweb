@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
+import com.dianping.cosmos.hive.client.bo.ResultStatusBo;
 import com.dianping.cosmos.hive.shared.util.ReflectUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -375,7 +376,29 @@ public class HiveJdbcClient {
 		}
 		return hqo;
 	};
-
+	
+	public ResultStatusBo createTable(String tokenid, String hql) {
+		ResultStatusBo result = new ResultStatusBo();
+		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
+		Connection conn = getConnection(ugi);
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			stmt.execute(hql);
+			result.setSuccess(true);
+		} catch (SQLException se) {
+			result.setSuccess(false);
+			result.setMessage(se.getMessage());
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+		}
+		return result;
+	}
+	
 	public static Connection getConnection(final UserGroupInformation ugi) {
 		Connection conn = null;
 		if (ugi != null){

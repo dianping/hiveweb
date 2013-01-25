@@ -9,11 +9,11 @@ public class QueryFavoriteBo implements IsSerializable {
 	public String getQueryName() {
 		return queryName;
 	}
-	public void setQueryName(String queryName) {
-		this.queryName = queryName;
-	}
 	public String getHql() {
 		return hql;
+	}
+	public void setQueryName(String queryName) {
+		this.queryName = queryName;
 	}
 	public void setHql(String hql) {
 		this.hql = hql;

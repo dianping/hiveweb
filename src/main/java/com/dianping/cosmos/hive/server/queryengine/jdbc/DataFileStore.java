@@ -24,15 +24,15 @@ import org.apache.hadoop.util.ReflectionUtils;
 public class DataFileStore {
 	private static final Log logger = LogFactory.getLog(DataFileStore.class);
 
-	private static int DEFAULT_FILE_STORE_LINE_LIMIT = 100000;
+	public final static int DEFAULT_FILE_STORE_LINE_LIMIT = 100000;
 	private static DataFileStore instance;
 
-	public static String FILE_STORE_DIRECTORY_LOCATION;
-	public static String QUERY_STATUS_LOCATION;
-	public static int FILE_STORE_LINE_LIMIT;
+	public final static String FILE_STORE_DIRECTORY_LOCATION;
+	public final static String QUERY_STATUS_LOCATION;
+	public final static int FILE_STORE_LINE_LIMIT;
 	public final static String DEFAULT_CODEC_CLASS = "org.apache.hadoop.io.compress.GzipCodec";
 	public final static int BUFFER_SIZE = 8 * 1024;
-	private final static String ENCODING = "UTF-8";
+	public final static String ENCODING = "utf-8";
 
 	static {
 		ResourceBundle bundle = ResourceBundle.getBundle("context");
@@ -47,10 +47,17 @@ public class DataFileStore {
 
 	public static DataFileStore getInstance() {
 		if (instance == null) {
-			instance = new DataFileStore();
-			logger.info("initialize DataFileStore, FILE_STORE_DIRECTORY_LOCATION is "
-					+ FILE_STORE_DIRECTORY_LOCATION
-					+ " FILE_STORE_LINE_LIMIT is " + FILE_STORE_LINE_LIMIT);
+			synchronized (DataFileStore.class) {
+				if (instance == null) {
+					instance = new DataFileStore();
+					logger.info("initialize DataFileStore, FILE_STORE_DIRECTORY_LOCATION is "
+							+ FILE_STORE_DIRECTORY_LOCATION
+							+ " FILE_STORE_LINE_LIMIT is "
+							+ FILE_STORE_LINE_LIMIT
+							+ " QUERY_STATUS_LOCATION is "
+							+ QUERY_STATUS_LOCATION);
+				}
+			}
 		}
 		return instance;
 	}
@@ -100,7 +107,8 @@ public class DataFileStore {
 	}
 
 	public static String getStoreFileAbsolutePath(String tokenid,
-			String username, String database, String hql, long timestamp, String queryId) {
+			String username, String database, String hql, long timestamp,
+			String queryId) {
 		String fileName = getStoreFileName(tokenid, username, database, hql,
 				timestamp, queryId);
 		return FILE_STORE_DIRECTORY_LOCATION + File.separator + fileName;
@@ -108,7 +116,8 @@ public class DataFileStore {
 
 	public static String getStoreFileName(String tokenid, String username,
 			String database, String hql, long timestamp, String queryId) {
-		String input = tokenid + username + database + hql + timestamp + queryId;
+		String input = tokenid + username + database + hql + timestamp
+				+ queryId;
 		String md5 = getMD5Hash(input);
 		return md5 + ".gz";
 	}

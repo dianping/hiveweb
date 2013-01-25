@@ -9,6 +9,7 @@ public class SimpleAutoCompletionItems implements CompletionItems {
 		completions = items;
 	}
 
+	@Override
 	public String[] getCompletionItems(String match) {
 		ArrayList<String> matches = new ArrayList<String>();
 		for (int i = 0; i < completions.length; i++) {
@@ -18,7 +19,7 @@ public class SimpleAutoCompletionItems implements CompletionItems {
 		}
 		String[] returnMatches = new String[matches.size()];
 		for (int i = 0; i < matches.size(); i++) {
-			returnMatches[i] = (String) matches.get(i);
+			returnMatches[i] = matches.get(i);
 		}
 		return returnMatches;
 	}

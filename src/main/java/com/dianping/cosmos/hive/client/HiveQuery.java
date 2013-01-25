@@ -15,7 +15,6 @@ import com.dianping.cosmos.hive.client.css.TableResources;
 import com.dianping.cosmos.hive.client.service.HiveQueryServiceAsync;
 import com.dianping.cosmos.hive.client.service.LoginServiceAsync;
 import com.dianping.cosmos.hive.client.widget.AutoCompleteTextArea;
-import com.dianping.cosmos.hive.client.widget.CustomDialogBox;
 import com.dianping.cosmos.hive.client.widget.HiveKeyword;
 import com.dianping.cosmos.hive.client.widget.SimpleAutoCompletionItems;
 import com.dianping.cosmos.hive.shared.util.UUID;
@@ -57,10 +56,10 @@ import com.google.gwt.view.client.HasData;
 public class HiveQuery extends LoginComponent implements EntryPoint {
 	private static HiveQueryUiBinder uiBinder = GWT
 			.create(HiveQueryUiBinder.class);
-	private final static int QUERY_RESULT_SHOW_ROW_NUMBER = 500;
-
 	interface HiveQueryUiBinder extends UiBinder<Widget, HiveQuery> {
 	}
+	
+	private final static int QUERY_RESULT_SHOW_ROW_NUMBER = 500;
 
 	@UiField(provided = true)
 	CellTable<String[]> cellTable;
@@ -84,8 +83,6 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	Button killQueryBut;
 	@UiField
 	Button saveQuery;
-
-	private CustomDialogBox cusDialog;
 
 	private Map<String, String> queryFavoriteMap = new HashMap<String, String>();
 	private List<String[]> data = new ArrayList<String[]>();
@@ -246,8 +243,6 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		}
 
 		if ("".equals(selectedText)) {
-			cusDialog.setBodyContent("请填写查询语句,不能为空!");
-			cusDialog.center();
 			return;
 		}
 
@@ -273,9 +268,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 
 					@Override
 					public void onSuccess(HiveQueryOutputBo result) {
-						if (timer != null) {
-							timer.cancel();
-						}
+						cancelTimer();
 						submitBut.setEnabled(true);
 						killQueryBut.setEnabled(false);
 
@@ -318,9 +311,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						if (timer != null) {
-							timer.cancel();
-						}
+						cancelTimer();
 						submitBut.setEnabled(true);
 						killQueryBut.setEnabled(false);
 						if (isQueryStopped) {
@@ -354,6 +345,13 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		timer.schedule(2000);
 		timer.scheduleRepeating(3000);
 	}
+	
+	private void cancelTimer() {
+	    if (timer != null) {
+	    	timer.cancel();
+	    	timer = null;
+	    }
+	}
 
 	@UiHandler("saveQuery")
 	void saveQueryButtonHandleClick(ClickEvent e) {
@@ -364,9 +362,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 
 	@UiHandler("submitQPBut")
 	void queryPlanSubmitButtonHandleClick(ClickEvent e) {
-		if ("".equals(hqlTextArea.getValue())) {
-			cusDialog.setBodyContent("请填写语句，不能为空!");
-			cusDialog.center();
+		if ("".equals(hqlTextArea.getValue().trim())) {
 			return;
 		}
 
@@ -419,7 +415,6 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 				true);
 		pager.setDisplay(cellTable);
 
-		cusDialog = new CustomDialogBox("text");
 		Widget widget = uiBinder.createAndBindUi(this);
 		killQueryBut.setEnabled(false);
 
@@ -490,7 +485,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 			vPanel.add(queryTextBox);
 			vPanel.add(hPanel);
 
-			setAnimationEnabled(true);
+			//setAnimationEnabled(true);
 			setWidget(vPanel);
 			setGlassEnabled(true);
 		}

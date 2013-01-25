@@ -31,5 +31,4 @@ public class FieldSchemaBo implements IsSerializable {
 		return "FieldSchemaBo [fieldName=" + fieldName + ", fieldType="
 				+ fieldType + ", fieldComment=" + fieldComment + "]";
 	}
-
 }

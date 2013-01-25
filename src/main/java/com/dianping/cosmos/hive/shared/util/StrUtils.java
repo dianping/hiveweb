@@ -2,8 +2,8 @@ package com.dianping.cosmos.hive.shared.util;
 
 import java.util.List;
 
-public final class StringUtils {
-	private StringUtils(){
+public final class StrUtils {
+	private StrUtils(){
 	}
 
 	public static String listToString(List<String> stringList){

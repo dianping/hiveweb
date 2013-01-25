@@ -114,12 +114,6 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 		}
 	}
 
-	private static String getStatusFileLocation(String username, long timestamp) {
-		String statusFilename = joinString(username, "_", "" + timestamp,
-				".stat");
-		return joinLocation(DataFileStore.QUERY_STATUS_LOCATION, statusFilename);
-	}
-
 	private static String getStatusFileLocation(String queryId) {
 		String statusFileLocation = joinLocation(
 				DataFileStore.QUERY_STATUS_LOCATION, queryId + ".stat");

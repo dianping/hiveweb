@@ -11,10 +11,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.CharSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import com.dianping.cosmos.hive.server.queryengine.cmdline.streamhandler.IStreamHandler;
 
 public class ShellCmdExecutor {

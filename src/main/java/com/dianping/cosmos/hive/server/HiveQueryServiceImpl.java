@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
 import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
+import com.dianping.cosmos.hive.client.bo.ResultStatusBo;
 import com.dianping.cosmos.hive.client.service.HiveQueryService;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
 import com.dianping.cosmos.hive.server.queryengine.cmdline.HiveCmdLineQueryEngine;
@@ -25,7 +27,7 @@ import com.dianping.cosmos.hive.server.store.domain.QueryFavorite;
 import com.dianping.cosmos.hive.server.store.domain.QueryHistory;
 import com.dianping.cosmos.hive.server.store.service.QueryFavoriteService;
 import com.dianping.cosmos.hive.server.store.service.QueryHistoryService;
-import com.dianping.cosmos.hive.shared.util.StringUtils;
+import com.dianping.cosmos.hive.shared.util.StrUtils;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 @SuppressWarnings("serial")
@@ -37,7 +39,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 
 	@Autowired
 	private QueryHistoryService queryHistoryService;
-	
+
 	@Autowired
 	private QueryFavoriteService queryFavoriteService;
 
@@ -77,12 +79,11 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		}
 
 		String resultLocation = "";
-		//if (input.isStoreResult()) {
-			resultLocation = DataFileStore.getStoreFileAbsolutePath(
-					input.getTokenid(), input.getUsername(),
-					input.getDatabase(), input.getHql(), input.getTimestamp(),
-					input.getQueryid());
-		//}
+		// if (input.isStoreResult()) {
+		resultLocation = DataFileStore.getStoreFileAbsolutePath(
+				input.getTokenid(), input.getUsername(), input.getDatabase(),
+				input.getHql(), input.getTimestamp(), input.getQueryid());
+		// }
 		input.setResultLocation(resultLocation);
 
 		HiveQueryOutputBo output = new HiveQueryOutputBo();
@@ -120,7 +121,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public String getQueryPlan(String tokenid, String hql, String database) {
 		return hiveJdbcClient.getQueryPlan(tokenid,
-				StringUtils.preprocessQuery(hql), database);
+				StrUtils.preprocessQuery(hql), database);
 	}
 
 	@Override
@@ -175,12 +176,11 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<QueryFavoriteBo> getFavoriteQuery(
-			String username) {
-		List<QueryFavorite> queryFavs = queryFavoriteService.selectQueryFavoriteByUsername(username);
-		List<QueryFavoriteBo> queryFavsBos = null;
+	public List<QueryFavoriteBo> getFavoriteQuery(String username) {
+		List<QueryFavorite> queryFavs = queryFavoriteService
+				.selectQueryFavoriteByUsername(username);
+		List<QueryFavoriteBo> queryFavsBos = new ArrayList<QueryFavoriteBo>();
 		if (queryFavs != null && queryFavs.size() > 0) {
-			queryFavsBos = new ArrayList<QueryFavoriteBo>(queryFavs.size()); 
 			for (QueryFavorite qf : queryFavs) {
 				QueryFavoriteBo q = new QueryFavoriteBo();
 				q.setQueryName(qf.getQueryName());
@@ -189,5 +189,16 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		return queryFavsBos;
+	}
+
+	@Override
+	public ResultStatusBo createTable(String tokenid, String hql) {
+		if (!StringUtils.isBlank(tokenid) && !StringUtils.isBlank(hql)) {
+			return hiveJdbcClient.createTable(tokenid, hql);
+		}
+		ResultStatusBo r = new ResultStatusBo();
+		r.setSuccess(false);
+		r.setMessage("查询语句不能为空");
+		return r;
 	}
 }

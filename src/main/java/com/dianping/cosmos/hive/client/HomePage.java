@@ -6,7 +6,7 @@ import org.gwtmultipage.client.UrlPatternEntryPoint;
 
 import com.dianping.cosmos.hive.client.service.HiveQueryServiceAsync;
 import com.dianping.cosmos.hive.client.service.LoginServiceAsync;
-import com.dianping.cosmos.hive.shared.util.StringUtils;
+import com.dianping.cosmos.hive.shared.util.StrUtils;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -131,7 +131,7 @@ public class HomePage extends LoginComponent implements EntryPoint {
 
 			@Override
 			public void onSuccess(List<String> result) {
-				latestQueryHistoryStastics.add(new HTML(StringUtils
+				latestQueryHistoryStastics.add(new HTML(StrUtils
 						.listToString(result)));
 			}
 
