@@ -79,14 +79,12 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		}
 
 		String resultLocation = "";
-		// if (input.isStoreResult()) {
 		resultLocation = DataFileStore.getStoreFileAbsolutePath(
 				input.getTokenid(), input.getUsername(), input.getDatabase(),
 				input.getHql(), input.getTimestamp(), input.getQueryid());
-		// }
 		input.setResultLocation(resultLocation);
 
-		HiveQueryOutputBo output = new HiveQueryOutputBo();
+		HiveQueryOutputBo output = null;
 		if (queryEngine instanceof JdbcQueryEngine) {
 			output = queryEngine.getQueryResult(input);
 		} else if (queryEngine instanceof HiveCmdLineQueryEngine) {
@@ -96,19 +94,21 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 					+ queryEngine.getClass());
 		}
 
-		// insert query history DB
-		String resultFileLocation = "";
-		if (!org.apache.commons.lang.StringUtils.isEmpty(output
-				.getResultFileAbsolutePath())) {
-			resultFileLocation = output.getResultFileAbsolutePath();
+		if (output != null  && "".equals(output.getErrorMsg())) {
+			// insert query history DB
+			String resultFileLocation = "";
+			if (!StringUtils.isEmpty(output
+					.getResultFileAbsolutePath())) {
+				resultFileLocation = output.getResultFileAbsolutePath();
+			}
+			
+			QueryHistory history = new QueryHistory();
+			history.setHql(input.getHql());
+			history.setUsername(input.getUsername());
+			history.setAddtime(new Date(input.getTimestamp()));
+			history.setFilename(resultFileLocation);
+			queryHistoryService.insertQueryHistory(history);
 		}
-
-		QueryHistory history = new QueryHistory();
-		history.setHql(input.getHql());
-		history.setUsername(input.getUsername());
-		history.setAddtime(new Date(input.getTimestamp()));
-		history.setFilename(resultFileLocation);
-		queryHistoryService.insertQueryHistory(history);
 
 		return output;
 	}

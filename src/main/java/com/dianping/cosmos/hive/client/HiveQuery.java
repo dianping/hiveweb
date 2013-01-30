@@ -316,34 +316,20 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 						killQueryBut.setEnabled(false);
 						if (isQueryStopped) {
 							progressTextArea.setText("停止查询成功!");
-						} else {
-							progressTextArea.setText("查询出错了!");
-						}
+						} 
+//						else {
+//							progressTextArea.setText("查询出错了!");
+//						}
 					}
 				});
 
 		timer = new Timer() {
 			public void run() {
-				hiveQueryService.getQueryStatus(queryid,
-						new AsyncCallback<String>() {
-
-							@Override
-							public void onSuccess(String result) {
-								progressTextArea.setText(result);
-								progressTextArea.getElement().setScrollTop(
-										progressTextArea.getElement()
-												.getScrollHeight());
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								progressTextArea.setText("查询进度返回错误!");
-							}
-						});
+				getQueryStatus(queryid);
 			}
 		};
 		timer.schedule(2000);
-		timer.scheduleRepeating(3000);
+		timer.scheduleRepeating(2000);
 	}
 	
 	private void cancelTimer() {
@@ -351,6 +337,26 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	    	timer.cancel();
 	    	timer = null;
 	    }
+	}
+	
+	private void getQueryStatus(String queryid) {
+		hiveQueryService.getQueryStatus(queryid,
+				new AsyncCallback<String>() {
+
+					@Override
+					public void onSuccess(String result) {
+						progressTextArea.setText(result);
+						progressTextArea.getElement().setScrollTop(
+								progressTextArea.getElement()
+										.getScrollHeight());
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						progressTextArea.setText("查询进度返回错误!");
+					}
+				});
+		
 	}
 
 	@UiHandler("saveQuery")

@@ -1,5 +1,6 @@
 package com.dianping.cosmos.hive.server;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -13,6 +14,9 @@ import org.apache.hadoop.security.Krb5Login;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import sun.security.krb5.KrbException;
+import sun.security.krb5.internal.tools.kinit;
 
 import com.dianping.cosmos.hive.client.bo.LoginTokenBo;
 import com.dianping.cosmos.hive.client.service.LoginService;
@@ -37,7 +41,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 	@Autowired
 	private UserLoginService userLoginService;
 
-	public static Cache<String, Date> tokenCache = CacheBuilder.newBuilder()
+	private static Cache<String, Date> tokenCache = CacheBuilder.newBuilder()
 			.concurrencyLevel(4).maximumSize(100000)
 			.expireAfterWrite(12, TimeUnit.HOURS)
 			.removalListener(new RemovalListener<String, Date>() {
@@ -49,6 +53,10 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 				}
 
 			}).build();
+	
+	public static Cache<String, Date> getTokenCache(){
+		return tokenCache;
+	}
 
 	@Override
 	public Boolean isAuthenticated(String tokenid) {
@@ -71,7 +79,13 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public LoginTokenBo authenticate(String username, String password) {
 		LoginTokenBo tokenBo = null;
-
+		try {
+			kinit.createTicket(username, password, "/tmp/" + username + ".ticketcache");
+		} catch (Exception e) {
+			logger.error("create ticket cache failed:" + e);
+			return null;
+		}
+		
 		UserGroupInformation ugi = Krb5Login.getVerifiedUgi(username, password);
 		if (ugi == null) {
 			logger.error(String.format(
@@ -120,8 +134,13 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Boolean logout(String tokenid) {
-		LoginServiceImpl.tokenCache.invalidate(tokenid);
+		tokenCache.invalidate(tokenid);
 		HiveJdbcClient.removeUgiByTokenid(tokenid);
 		return true;
+	}
+	
+	public static void main(String[] args) {
+		LoginServiceImpl dfdf = new LoginServiceImpl();
+		dfdf.authenticate("hduser", "hduser");
 	}
 }

@@ -151,6 +151,7 @@ public class Krb5Login {
 			login.login();
 		} catch (LoginException e) {
 			e.printStackTrace();
+			return null;
 		}
 		UserGroupInformation loginUser = new UserGroupInformation(subject);
 		// loginUser.setLogin(login);

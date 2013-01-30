@@ -61,7 +61,7 @@
 								<g:CheckBox ui:field="externalTable" text="是"/>
 							</g:customCell>
 							<g:cell>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								*表存储路径:</g:cell>
+								表存储路径:</g:cell>
 							<g:customCell>
 								<g:TextBox ui:field="location" />
 							</g:customCell>

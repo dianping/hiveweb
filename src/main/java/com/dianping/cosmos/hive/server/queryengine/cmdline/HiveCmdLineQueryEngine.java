@@ -52,9 +52,8 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 		}
 
 		String statusLocation = getStatusFileLocation(input.getQueryid());
-		logger.info("statusLocation:" + statusLocation);
 		String resultLocation = input.getResultLocation();
-		logger.info("statusLocation:" + resultLocation);
+		logger.debug("statusLocation:" + statusLocation + " result location:" + resultLocation);
 
 		IStreamHandler resultHandler = null;
 
@@ -67,25 +66,28 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 //		}
 		resultHandler.setShowLimit(limit);
 
+		String ticketCache = "/tmp/" + username + ".ticketcache"; 
 		String cmd = joinString("bash -c \"",
-				"hive --hiveconf hive.cli.print.header=true -e \\\"", hiveCmd,
+				"export KRB5CCNAME=" ,ticketCache , "; hive --hiveconf hive.cli.print.header=true -e \\\"", hiveCmd,
 				"\\\"\"");
+		
+		HiveQueryOutputBo res = new HiveQueryOutputBo(); 
 		// execute cmd
 		int exitCode = -1;
 		try {
 			exitCode = ShellCmdExecutor.getInstance().execute(cmd, querId,
 					resultHandler, statusLocation);
 		} catch (ShellCmdExecException e) {
-			logger.error("Exceptions occurs in executing hive command!", e);
-			return null;
+			logger.error(e);
 		}
 		if (exitCode != 0) {
 			logger.error("Hive Command is NOT executed successfully! The exit code of hive command is "
 					+ exitCode);
-			return null;
+			res.setErrorMsg(readStatusFileToString(querId));
+			return res;
 		}
-
-		HiveQueryOutputBo res = resultHandler.getResult();
+		
+		res = resultHandler.getResult();
 		
 		// remove data result file if user didn't request to store
 		if (storeResultToFile) {
@@ -103,6 +105,10 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 
 	@Override
 	public String getQueryStatus(String queryId) {
+		return readStatusFileToString(queryId); 
+	}
+	
+	private static String readStatusFileToString(String queryId) {
 		String statusFileLocation = getStatusFileLocation(queryId);
 		try {
 			return FileUtils.readFileToString(new File(statusFileLocation),
@@ -110,8 +116,9 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 		} catch (IOException e) {
 			logger.error("Exception occurs in reading status file: "
 					+ statusFileLocation, e);
-			return null;
+			return StringUtils.EMPTY;
 		}
+		
 	}
 
 	private static String getStatusFileLocation(String queryId) {

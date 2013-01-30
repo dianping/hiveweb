@@ -316,7 +316,7 @@ public class HiveJdbcClient {
 			int currentRow = 0;
 
 			BufferedWriter bw = null;
-			if (isStoreFile && !"".equals(resultLocation)) { 
+			if (isStoreFile && !StringUtils.isBlank(resultLocation)) { 
 				bw = DataFileStore.openOutputStream(resultLocation);
 				// Write Resultset field names to the first line of result file
 				bw.write(sb.toString());

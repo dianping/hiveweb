@@ -12,11 +12,12 @@ public class HiveQueryOutputBo implements IsSerializable {
 	private List<String[]> data;
 	private String errorMsg;
 	private String resultFileAbsolutePath;
-	
-	public HiveQueryOutputBo(){
+
+	public HiveQueryOutputBo() {
 		data = new ArrayList<String[]>();
+		errorMsg = "";
 	}
-	
+
 	public long getExecTime() {
 		return execTime;
 	}
@@ -32,7 +33,7 @@ public class HiveQueryOutputBo implements IsSerializable {
 	public void setFieldSchema(String[] fieldSchema) {
 		this.fieldSchema = fieldSchema;
 	}
-	
+
 	public boolean addOneRow(String[] row) {
 		return data.add(row);
 	}

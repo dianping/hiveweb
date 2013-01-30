@@ -96,7 +96,7 @@ public class ShellCmdExecutor {
 			t.start();
 		}
 
-		if (!StringUtils.isEmpty(statusLocation)) {
+		if (!StringUtils.isBlank((statusLocation))) {
 			Thread t = new Thread(new Runnable() {
 				public void run() {
 					try {

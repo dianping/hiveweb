@@ -158,7 +158,7 @@ public class CreateTable extends LoginComponent implements EntryPoint {
 				StringBuilder sb = new StringBuilder();
 				sb.append(fName).append("      ").append(fType);
 				if (!"".equals(fDesc)) {
-					sb.append("      COMMENT  '").append(fDesc).append("'");
+					sb.append("      COMMENT '").append(fDesc).append("'");
 				}
 				fieldList.add(sb.toString());
 			}
@@ -167,10 +167,10 @@ public class CreateTable extends LoginComponent implements EntryPoint {
 		if (!"".equals(tableDesc.getValue())) {
 			hql.append("COMMENT '").append(tableDesc.getValue()).append("'\n");
 		}
-		hql.append("ROW FORMAT DELIMITED \n FIELDS TERMINATED BY '")
+		hql.append("ROW FORMAT DELIMITED\n FIELDS TERMINATED BY '")
 				.append(fieldTerminator.getValue(fieldTerminator
 						.getSelectedIndex()))
-				.append("' \n LINES TERMINATED BY '\\n'\n")
+				.append("'\n LINES TERMINATED BY '\\n'\n")
 				.append("STORED AS ");
 		String ff = fileFormat.getValue(fileFormat.getSelectedIndex());
 		if ("InputFormat".equalsIgnoreCase(ff)) {
@@ -198,7 +198,7 @@ public class CreateTable extends LoginComponent implements EntryPoint {
 				if (result.isSuccess()){
 					Window.alert("创建表成功!");
 				}else {
-					Window.alert(result.getMessage());
+					Window.alert("创建表失败!" + result.getMessage());
 				}
 			}
 			
@@ -239,7 +239,7 @@ public class CreateTable extends LoginComponent implements EntryPoint {
 		for (String f : fileFormatSet) {
 			fileFormat.addItem(f);
 		}
-		fileFormat.setSelectedIndex(3);
+		fileFormat.setSelectedIndex(1);
 
 		RootPanel.get("createtable").add(widget);
 	}
