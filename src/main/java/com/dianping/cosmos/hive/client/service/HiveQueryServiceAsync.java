@@ -38,6 +38,8 @@ public interface HiveQueryServiceAsync {
 	
 	public void createTable(String tokenid, String hql, AsyncCallback<ResultStatusBo> callback);
 	
+	public void uploadTableFile(String tokenid, String username, String dbname, String tablename, String filelocation, Boolean overwrite , String partionCond, AsyncCallback<ResultStatusBo> callback);
+	
 	public static final class Util {
 		private static HiveQueryServiceAsync instance;
 

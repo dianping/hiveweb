@@ -53,8 +53,8 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 				}
 
 			}).build();
-	
-	public static Cache<String, Date> getTokenCache(){
+
+	public static Cache<String, Date> getTokenCache() {
 		return tokenCache;
 	}
 
@@ -80,12 +80,13 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 	public LoginTokenBo authenticate(String username, String password) {
 		LoginTokenBo tokenBo = null;
 		try {
-			kinit.createTicket(username, password, "/tmp/" + username + ".ticketcache");
+			kinit.createTicket(username, password, "/tmp/" + username
+					+ ".ticketcache");
 		} catch (Exception e) {
 			logger.error("create ticket cache failed:" + e);
 			return null;
 		}
-		
+
 		UserGroupInformation ugi = Krb5Login.getVerifiedUgi(username, password);
 		if (ugi == null) {
 			logger.error(String.format(
@@ -137,10 +138,5 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 		tokenCache.invalidate(tokenid);
 		HiveJdbcClient.removeUgiByTokenid(tokenid);
 		return true;
-	}
-	
-	public static void main(String[] args) {
-		LoginServiceImpl dfdf = new LoginServiceImpl();
-		dfdf.authenticate("hduser", "hduser");
 	}
 }

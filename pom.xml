@@ -12,7 +12,7 @@
 
 	<properties>
 		<!-- Convenience property to set the GWT version -->
-		<gwtVersion>2.4.0</gwtVersion>
+		<gwtVersion>2.5.0</gwtVersion>
 		<spring4gwt.version>0.0.1</spring4gwt.version>
 		<!-- GWT needs at least java 1.5 -->
 		<webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
@@ -171,6 +171,21 @@
 			<artifactId>guava</artifactId>
 			<version>13.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dianping.kerberos</groupId>
+			<artifactId>kinit</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 
@@ -184,7 +199,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.4.0</version>
+				<version>2.5.0</version>
 				<executions>
 					<execution>
 						<goals>

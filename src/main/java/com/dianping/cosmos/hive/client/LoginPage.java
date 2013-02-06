@@ -1,7 +1,5 @@
 package com.dianping.cosmos.hive.client;
 
-import java.util.Date;
-
 import org.gwtmultipage.client.UrlPatternEntryPoint;
 
 import com.dianping.cosmos.hive.client.bo.LoginTokenBo;
@@ -15,7 +13,6 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -30,8 +27,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class LoginPage extends LoginComponent implements EntryPoint {
 	private static LoginViewUiBinder uiBinder = GWT
 			.create(LoginViewUiBinder.class);
-
-	private static final int COOKIE_TIMEOUT = 1000 * 60 * 60 * 12;
 
 	interface LoginViewUiBinder extends UiBinder<Widget, LoginPage> {
 	}
@@ -69,7 +64,6 @@ public class LoginPage extends LoginComponent implements EntryPoint {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
 							drawPanel();
 						}
 					});
@@ -125,7 +119,7 @@ public class LoginPage extends LoginComponent implements EntryPoint {
 								message.setWidget(new HTML(
 										"登陆失败!"));
 							} else {
-								setCookies(u, result.getTokenid(),
+								setCookies(u, u, result.getTokenid(),
 										result.getAddtime());
 								String link = "/home.html";
 								Window.Location.assign(link);
@@ -141,24 +135,4 @@ public class LoginPage extends LoginComponent implements EntryPoint {
 			message.setWidget(new HTML("用户名和密码不能为空!"));
 		}
 	}
-
-	public void setCookies(String username, String tokenid, Date addtime) {
-		Date expires = new Date((new Date()).getTime() + COOKIE_TIMEOUT);
-
-		Cookies.setCookie("username", username, expires);
-		Cookies.setCookie("tokenid", tokenid, expires);
-		Cookies.setCookie("addtime", addtime.toString(), expires);
-	}
-
-	public static void removeCookies() {
-		Cookies.removeCookie("username");
-		Cookies.removeCookie("tokenid");
-		Cookies.removeCookie("addtime");
-	}
-
-
-	public native void redirect(String url)
-	/*-{
-		$wnd.location.replace(url);
-	}-*/;
 }

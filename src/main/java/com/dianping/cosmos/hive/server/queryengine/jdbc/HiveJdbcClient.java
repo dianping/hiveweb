@@ -103,8 +103,7 @@ public class HiveJdbcClient {
 
 	public List<String> getDatabases(String tokenid) {
 		List<String> dbs = new ArrayList<String>();
-		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
-		Connection conn = getConnection(ugi);
+		Connection conn = getConnection(tokenid);
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
@@ -132,8 +131,7 @@ public class HiveJdbcClient {
 
 	public List<String> getTables(String tokenid, String database) {
 		List<String> tables = new ArrayList<String>();
-		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
-		Connection conn = getConnection(ugi);
+		Connection conn = getConnection(tokenid);
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
@@ -159,8 +157,7 @@ public class HiveJdbcClient {
 	public List<FieldSchemaBo> getTableSchema(String tokenid, String database,
 			String table) {
 		List<FieldSchemaBo> fieldSchemaList = new ArrayList<FieldSchemaBo>();
-		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
-		Connection conn = getConnection(ugi);
+		Connection conn = getConnection(tokenid);
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
@@ -192,8 +189,7 @@ public class HiveJdbcClient {
 
 	public String getTableSchemaDetail(String tokenid, String database,
 			String table) {
-		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
-		Connection conn = getConnection(ugi);
+		Connection conn = getConnection(tokenid);
 		StringBuilder sb = new StringBuilder(1000);
 		Statement stmt = null;
 		try {
@@ -235,8 +231,7 @@ public class HiveJdbcClient {
 
 	@SuppressWarnings({ "unchecked" })
 	public String getQueryPlan(String tokenid, String hql, String database) {
-		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
-		Connection conn = getConnection(ugi);
+		Connection conn = getConnection(tokenid);
 		StringBuilder sb = new StringBuilder(1000);
 		Statement stmt = null;
 		try {
@@ -287,8 +282,7 @@ public class HiveJdbcClient {
 			String database, String hql, int resultLimit, Boolean isStoreFile, String resultLocation, 
 			long timestamp) {
 		HiveQueryOutputBo hqo = new HiveQueryOutputBo(); 
-		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
-		Connection conn = getConnection(ugi);
+		Connection conn = getConnection(tokenid);
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
@@ -377,13 +371,13 @@ public class HiveJdbcClient {
 		return hqo;
 	};
 	
-	public ResultStatusBo createTable(String tokenid, String hql) {
-		ResultStatusBo result = new ResultStatusBo();
-		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
-		Connection conn = getConnection(ugi);
+	public ResultStatusBo executeHiveQuery(String tokenid, String hql) {
+		ResultStatusBo result = new ResultStatusBo(false, "");
+		Connection conn = getConnection(tokenid);
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
+			logger.debug("execute query:" + hql);
 			stmt.execute(hql);
 			result.setSuccess(true);
 		} catch (SQLException se) {
@@ -397,6 +391,12 @@ public class HiveJdbcClient {
 			}
 		}
 		return result;
+	}
+	
+	public static Connection getConnection(String tokenid){
+		UserGroupInformation ugi = ugiCache.getIfPresent(tokenid);
+		Connection conn = getConnection(ugi);
+		return conn;
 	}
 	
 	public static Connection getConnection(final UserGroupInformation ugi) {

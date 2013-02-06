@@ -35,7 +35,6 @@ import com.google.gwt.view.client.HasData;
 public class QueryHistory extends LoginComponent implements EntryPoint {
 	private static QueryHistoryUiBinder uiBinder = GWT
 			.create(QueryHistoryUiBinder.class);
-	private static Logger logger = Logger.getLogger("QueryHistory");
 
 	interface QueryHistoryUiBinder extends UiBinder<Widget, QueryHistory> {
 	}
@@ -160,7 +159,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 	}
 
 	private void bind() {
-		hiveQueryService.getQueryHistory(getUsername(),
+		hiveQueryService.getQueryHistory(getRealuser(),
 				new AsyncCallback<List<QueryHistoryBo>>() {
 
 					@Override

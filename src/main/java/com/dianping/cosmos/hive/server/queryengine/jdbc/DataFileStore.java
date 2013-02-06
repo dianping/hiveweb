@@ -29,6 +29,7 @@ public class DataFileStore {
 
 	public final static String FILE_STORE_DIRECTORY_LOCATION;
 	public final static String QUERY_STATUS_LOCATION;
+	public final static String UPLOAD_DIR_LOCATION;
 	public final static int FILE_STORE_LINE_LIMIT;
 	public final static String DEFAULT_CODEC_CLASS = "org.apache.hadoop.io.compress.GzipCodec";
 	public final static int BUFFER_SIZE = 8 * 1024;
@@ -40,6 +41,7 @@ public class DataFileStore {
 				.getString("hive-web.store.data.location");
 		QUERY_STATUS_LOCATION = bundle
 				.getString("hive-web.store.query.status.location");
+		UPLOAD_DIR_LOCATION =bundle.getString("hive-web.store.upload.location");
 		FILE_STORE_LINE_LIMIT = tryParseInt(
 				bundle.getString("hive-web.store.data.file.line.limit"),
 				DEFAULT_FILE_STORE_LINE_LIMIT);
@@ -55,7 +57,9 @@ public class DataFileStore {
 							+ " FILE_STORE_LINE_LIMIT is "
 							+ FILE_STORE_LINE_LIMIT
 							+ " QUERY_STATUS_LOCATION is "
-							+ QUERY_STATUS_LOCATION);
+							+ QUERY_STATUS_LOCATION
+							+ " UPLOAD_DIR_LOCATION"
+							+ UPLOAD_DIR_LOCATION);
 				}
 			}
 		}

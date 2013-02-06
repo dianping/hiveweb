@@ -14,6 +14,7 @@ import org.gwtmultipage.client.UrlPatternEntryPoint;
 import com.dianping.cosmos.hive.client.bo.ResultStatusBo;
 import com.dianping.cosmos.hive.client.service.HiveQueryServiceAsync;
 import com.dianping.cosmos.hive.client.service.LoginServiceAsync;
+import com.dianping.cosmos.hive.client.widget.CustomPopupPanel;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -21,11 +22,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -86,14 +87,21 @@ public class CreateTable extends LoginComponent implements EntryPoint {
 	Button genHql;
 	@UiField
 	Button execHql;
+	// upload tab widgets
+	@UiField
+	HTMLPanel uploadFilePanel;
+	
+	private CustomPopupPanel popupPanel = new CustomPopupPanel();
 
 	private static Set<String> fieldDelimiterSet = null;
 	private static Set<String> fileFormatSet = null;
 	private static List<String> columnTypeList = null;
-	
+
 	static {
-		fieldDelimiterSet = new HashSet<String>(Arrays.asList("\\001", "\\t", ","));
-		fileFormatSet = new HashSet<String>(Arrays.asList("TextFile", "SequenceFile", "RCFile", "InputFormat"));
+		fieldDelimiterSet = new HashSet<String>(Arrays.asList("\\001", "\\t",
+				","));
+		fileFormatSet = new HashSet<String>(Arrays.asList("TextFile",
+				"SequenceFile", "RCFile", "InputFormat"));
 		columnTypeList = new ArrayList<String>(Arrays.asList("TINYINT",
 				"SMALLINT", "INT", "BIGINT", "BOOLEAN", "FLOAT", "DOUBLE",
 				"STRING", "BINARY", "TIMESTAMP"));
@@ -170,8 +178,7 @@ public class CreateTable extends LoginComponent implements EntryPoint {
 		hql.append("ROW FORMAT DELIMITED\n FIELDS TERMINATED BY '")
 				.append(fieldTerminator.getValue(fieldTerminator
 						.getSelectedIndex()))
-				.append("'\n LINES TERMINATED BY '\\n'\n")
-				.append("STORED AS ");
+				.append("'\n LINES TERMINATED BY '\\n'\n").append("STORED AS ");
 		String ff = fileFormat.getValue(fileFormat.getSelectedIndex());
 		if ("InputFormat".equalsIgnoreCase(ff)) {
 			hql.append("\n     INPUTFORMAT   '").append(inputformat.getValue())
@@ -192,21 +199,25 @@ public class CreateTable extends LoginComponent implements EntryPoint {
 		if (!hql.toLowerCase().startsWith("create ")) {
 			return;
 		}
-		hiveQueryService.createTable(getTokenid(), hql, new AsyncCallback<ResultStatusBo>() {
-			@Override
-			public void onSuccess(ResultStatusBo result) {
-				if (result.isSuccess()){
-					Window.alert("创建表成功!");
-				}else {
-					Window.alert("创建表失败!" + result.getMessage());
-				}
-			}
-			
-			@Override
-			public void onFailure(Throwable caught) {
-				Window.alert("创建表失败!");
-			}
-		});
+		hiveQueryService.createTable(getTokenid(), hql,
+				new AsyncCallback<ResultStatusBo>() {
+					@Override
+					public void onSuccess(ResultStatusBo result) {
+						if (result.isSuccess()) {
+							popupPanel.setMessage("创建表成功!");
+							popupPanel.center();
+						} else {
+							popupPanel.setMessage("创建表失败!" + result.getMessage());
+							popupPanel.center();
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						popupPanel.setMessage("创建表失败!");
+						popupPanel.center();
+					}
+				});
 	}
 
 	@UiHandler("fileFormat")
@@ -241,6 +252,7 @@ public class CreateTable extends LoginComponent implements EntryPoint {
 		}
 		fileFormat.setSelectedIndex(1);
 
+		uploadFilePanel.add(new UploadFilePanel(""));
 		RootPanel.get("createtable").add(widget);
 	}
 

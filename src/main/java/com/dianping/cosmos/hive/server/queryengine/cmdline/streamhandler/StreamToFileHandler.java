@@ -64,10 +64,10 @@ class StreamToFileHandler extends BaseStreamHandler {
 			}
 			
 			if (lineNum >= fileStoreLineLimit) {
+				logger.info("start to destroy main process");
 				// finally destroy the hive process
 				super.proc.destroy();
 				super.setProcessKillStatus(true);
-				
 			}
 		} catch (IOException ios) {
 			logger.error("Exception occurs in writing data to file:", ios);
@@ -83,8 +83,6 @@ class StreamToFileHandler extends BaseStreamHandler {
 			IOUtils.closeQuietly(os);
 			it.close();
 			IOUtils.closeQuietly(is);
-			
-			
 		}
 	}
 

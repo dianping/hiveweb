@@ -45,7 +45,7 @@
 							</g:customCell>
 						</g:row>
 						<g:row>
-							<g:cell>*表描述信息:</g:cell>
+							<g:cell>表描述信息:</g:cell>
 							<g:customCell>
 								<g:TextBox ui:field="tableDesc" />
 							</g:customCell>
@@ -56,7 +56,7 @@
 							</g:customCell>
 						</g:row>
 						<g:row>
-							<g:cell>*是否为外部表:</g:cell>
+							<g:cell>是否为外部表:</g:cell>
 							<g:customCell>
 								<g:CheckBox ui:field="externalTable" text="是"/>
 							</g:customCell>
@@ -100,9 +100,9 @@
 					</g:VerticalPanel>
 				</g:HTMLPanel>
 			</g:Tab>
-			<g:Tab text="上传数据">
-				<g:VerticalPanel>
-				</g:VerticalPanel>
+			<g:Tab text="上传表数据" width="100%" height="100%">
+				<g:HTMLPanel addStyleNames="{style.htmlPanel}" ui:field="uploadFilePanel">
+				</g:HTMLPanel>
 			</g:Tab>
 		</g:TabPanel>
 	</g:VerticalPanel>

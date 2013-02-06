@@ -26,7 +26,6 @@ public class HomePage extends LoginComponent implements EntryPoint {
 	private CaptionPanel hiveQueryCap;
 	private CaptionPanel tableSchemaCap;
 	private CaptionPanel queryHistoryCap;
-
 	private CaptionPanel descStmt;
 
 	private HIVEMessages messages = (HIVEMessages) GWT
@@ -56,7 +55,6 @@ public class HomePage extends LoginComponent implements EntryPoint {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
 							cleanup();
 						}
 					});

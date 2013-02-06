@@ -5,6 +5,10 @@
 	<inherits name='org.gwtmultipage.gwtmultipage' />
 	<inherits name="com.google.gwt.i18n.I18N" />
 	<inherits name="com.google.gwt.logging.Logging"/>
+	<!-- Include GWTUpload library -->
+  	<inherits name="gwtupload.GWTUpload"/>
+  	<!-- Load dinamically predefined styles in the library when the application starts -->
+  	<stylesheet src="Upload.css"/>
 
 	<!-- Use this EntryPoint instead of your own one. -->
 	<entry-point class='org.gwtmultipage.client.EntrypointDispatcher' />

@@ -160,7 +160,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	}
 	
 	private void getFavoriteQuerys(){
-		hiveQueryService.getFavoriteQuery(getUsername(),
+		hiveQueryService.getFavoriteQuery(getRealuser(),
 				new AsyncCallback<List<QueryFavoriteBo>>() {
 
 					@Override
@@ -253,6 +253,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		hqInputBo.setResultLimit(QUERY_RESULT_SHOW_ROW_NUMBER);
 		hqInputBo.setTimestamp(new Date().getTime());
 		hqInputBo.setUsername(getUsername());
+		hqInputBo.setRealuser(getRealuser());
 		hqInputBo.setTokenid(getTokenid());
 		hqInputBo.setStoreResult(isStoreFile.getValue());
 		queryid = UUID.createUUID();
@@ -361,7 +362,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 
 	@UiHandler("saveQuery")
 	void saveQueryButtonHandleClick(ClickEvent e) {
-		DialogBox dlg = new SaveQueryDialog(hiveQueryService, getUsername(),
+		DialogBox dlg = new SaveQueryDialog(hiveQueryService, getRealuser(),
 				hqlTextArea.getValue().trim());
 		dlg.center();
 	}

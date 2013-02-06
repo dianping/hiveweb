@@ -12,6 +12,19 @@
         </param-value>
 	</context-param>
 
+	<context-param>
+		<!-- max size of the upload request -->
+		<param-name>maxSize</param-name>
+		<param-value>3145728</param-value>
+	</context-param>
+	<context-param>
+		<!-- Useful in development mode to slow down the uploads in fast networks. 
+			Put the number of milliseconds to sleep in each block received in the server. 
+			false or 0, means don't use slow uploads -->
+		<param-name>slowUploads</param-name>
+		<param-value>200</param-value>
+	</context-param>
+
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -25,10 +38,21 @@
 		<servlet-name>MyFileServlet</servlet-name>
 		<servlet-class>com.dianping.cosmos.hive.server.FileDownload</servlet-class>
 	</servlet>
-	
+
 	<servlet>
 		<servlet-name>MyLogoutServlet</servlet-name>
 		<servlet-class>com.dianping.cosmos.hive.server.Logout</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>LoginServlet</servlet-name>
+		<servlet-class>com.dianping.cosmos.hive.server.Login</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>uploadServlet</servlet-name>
+		<!-- This is the default servlet, it puts files in session -->
+		<servlet-class>com.dianping.cosmos.hive.server.UploadFileServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
@@ -40,10 +64,20 @@
 		<servlet-name>MyFileServlet</servlet-name>
 		<url-pattern>/hivewebrowser/myfiledownload/*</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet-mapping>
 		<servlet-name>MyLogoutServlet</servlet-name>
 		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>LoginServlet</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>uploadServlet</servlet-name>
+		<url-pattern>*.gupld</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>

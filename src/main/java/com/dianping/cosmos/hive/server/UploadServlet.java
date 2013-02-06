@@ -1,8 +1,8 @@
 package com.dianping.cosmos.hive.server;
 
-import static gwtupload.shared.UConsts.PARAM_SHOW;
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
+import gwtupload.shared.UConsts;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,17 +10,12 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.util.Shell.ShellCommandExecutor;
 
-import com.dianping.cosmos.hive.server.queryengine.jdbc.DataFileStore;
-
-public class UploadFileServlet extends UploadAction {
+public class UploadServlet extends UploadAction {
 	private static final long serialVersionUID = 1L;
 
 	Hashtable<String, String> receivedContentTypes = new Hashtable<String, String>();
@@ -36,41 +31,47 @@ public class UploadFileServlet extends UploadAction {
 	@Override
 	public String executeAction(HttpServletRequest request,
 			List<FileItem> sessionFiles) throws UploadActionException {
+		String response = "";
 		int cont = 0;
-		String username = StringUtils.EMPTY;
-		Cookie[] cookies = request.getCookies();
-		for (Cookie c : cookies){
-			if ("username".equalsIgnoreCase(c.getName())){
-				username = c.getValue();
-			}
-		}
-		if (StringUtils.isEmpty(username)){
-			logger.error("request cookies doesn't contain username");
-			throw new UploadActionException("request cookies doesn't contain username");
-		}
-		
-		File file = null;
 		for (FileItem item : sessionFiles) {
 			if (false == item.isFormField()) {
 				cont++;
 				try {
-					file = File.createTempFile(username + "-upload-", ".txt", new File(DataFileStore.UPLOAD_DIR_LOCATION));
-					file.deleteOnExit();
+					// / Create a new file based on the remote file name in the
+					// client
+					// String saveName =
+					// item.getName().replaceAll("[\\\\/><\\|\\s\"'{}()\\[\\]]+",
+					// "_");
+					// File file =new File("/tmp/" + saveName);
+
+					// / Create a temporary file placed in /tmp (only works in
+					// unix)
+					// File file = File.createTempFile("upload-", ".bin", new
+					// File("/tmp"));
+
+					// / Create a temporary file placed in the default system
+					// temp folder
+					File file = File.createTempFile("upload-", ".bin");
 					item.write(file);
+
 					// / Save a list with the received files
 					receivedFiles.put(item.getFieldName(), file);
 					receivedContentTypes.put(item.getFieldName(),
 							item.getContentType());
+
+					// / Send a customized message to the client.
+					response += "File saved as " + file.getAbsolutePath();
 				} catch (Exception e) {
 					throw new UploadActionException(e);
 				}
 			}
 		}
+
 		// / Remove files from session because we have a copy of them
 		removeSessionFileItems(request);
-
-		// / Send information of the received files to the client.
-		return file.getAbsolutePath();
+		
+		// / Send your customized message to the client.
+		return response;
 	}
 
 	/**
@@ -79,7 +80,7 @@ public class UploadFileServlet extends UploadAction {
 	@Override
 	public void getUploadedFile(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-		String fieldName = request.getParameter(PARAM_SHOW);
+		String fieldName = request.getParameter(UConsts.PARAM_SHOW);
 		File f = receivedFiles.get(fieldName);
 		if (f != null) {
 			response.setContentType(receivedContentTypes.get(fieldName));
@@ -103,4 +104,5 @@ public class UploadFileServlet extends UploadAction {
 			file.delete();
 		}
 	}
+
 }

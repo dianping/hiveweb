@@ -6,6 +6,14 @@ public class ResultStatusBo implements IsSerializable {
 	private boolean success;
 	private String message;
 	
+	public ResultStatusBo(){
+	}
+	
+	public ResultStatusBo(boolean success, String message){
+		this.success = success;
+		this.message = message;
+	}
+	
 	public boolean isSuccess() {
 		return success;
 	}

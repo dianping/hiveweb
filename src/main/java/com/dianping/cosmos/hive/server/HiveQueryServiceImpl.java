@@ -1,21 +1,25 @@
 package com.dianping.cosmos.hive.server;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.util.Shell.ShellCommandExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
-import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.dianping.cosmos.hive.client.bo.ResultStatusBo;
 import com.dianping.cosmos.hive.client.service.HiveQueryService;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
@@ -94,22 +98,20 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 					+ queryEngine.getClass());
 		}
 
-		if (output != null  && "".equals(output.getErrorMsg())) {
+		if (output != null && "".equals(output.getErrorMsg())) {
 			// insert query history DB
 			String resultFileLocation = "";
-			if (!StringUtils.isEmpty(output
-					.getResultFileAbsolutePath())) {
+			if (!StringUtils.isBlank(output.getResultFileAbsolutePath())) {
 				resultFileLocation = output.getResultFileAbsolutePath();
 			}
-			
+
 			QueryHistory history = new QueryHistory();
 			history.setHql(input.getHql());
-			history.setUsername(input.getUsername());
+			history.setUsername(input.getRealuser());
 			history.setAddtime(new Date(input.getTimestamp()));
 			history.setFilename(resultFileLocation);
 			queryHistoryService.insertQueryHistory(history);
 		}
-
 		return output;
 	}
 
@@ -194,11 +196,50 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public ResultStatusBo createTable(String tokenid, String hql) {
 		if (!StringUtils.isBlank(tokenid) && !StringUtils.isBlank(hql)) {
-			return hiveJdbcClient.createTable(tokenid, hql);
+			return hiveJdbcClient.executeHiveQuery(tokenid, hql);
 		}
-		ResultStatusBo r = new ResultStatusBo();
-		r.setSuccess(false);
-		r.setMessage("查询语句不能为空");
+		ResultStatusBo r = new ResultStatusBo(false, "the input hql can not be empty");
 		return r;
+	}
+
+	@Override
+	public ResultStatusBo uploadTableFile(String tokenid, String username,
+			String dbname, String tablename, String filelocation,
+			Boolean overwrite, String partionCond) {
+		ResultStatusBo rs = new ResultStatusBo(false, "");
+		StringBuilder sb = new StringBuilder(150);
+		sb.append("LOAD DATA LOCAL INPATH '").append(filelocation).append("' ");
+		if (overwrite == true) {
+			sb.append("OVERWRITE ");
+		}
+		sb.append("INTO TABLE ").append(dbname).append(".").append(tablename);
+		if (StringUtils.isNotBlank(partionCond)) {
+			sb.append(" PARTITION (").append(partionCond).append(")");
+		}
+
+		String ticketCache = "/tmp/" + username + ".ticketcache";
+		String exportKRB5Cmd = "export KRB5CCNAME=" + ticketCache;
+		String hiveQueryCmd = "hive -e \"" + sb.toString() + "\"";
+		String[] shellCmd = { "bash", "-c", exportKRB5Cmd + ";" +hiveQueryCmd };
+		
+		logger.info("exec load data command:" + StringUtils.join(shellCmd, " "));
+		ShellCommandExecutor shExec = new ShellCommandExecutor(shellCmd);
+		
+		try {
+			shExec.execute();
+		} catch (IOException e) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Error while uploading file : " + filelocation
+						+ ", command:" + shellCmd + " , Exception: "
+						+ e.getMessage());
+				rs.setSuccess(false);
+				rs.setMessage(e.getMessage());
+			}
+		}
+		if (shExec.getExitCode() == 0) {
+			rs.setSuccess(true);
+			FileUtils.deleteQuietly(new File(filelocation));
+		}
+		return rs;
 	}
 }

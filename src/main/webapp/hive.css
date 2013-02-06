@@ -127,3 +127,35 @@ a {
 	font-size: 15px;
 	padding: 8px;
 }
+
+/**********************************
+*            My Popup 
+***********************************/
+.my-popup
+{
+	margin-left            :    auto;
+    margin-right           :    auto;
+    background-color       :    #ffc;
+    border                 :    3px solid #009;
+}
+
+.my-popup-header
+{
+    background-color       :    #ff0;
+    font-size              :    90%;
+    font-weight            :    bold;
+    border-bottom          :    3px solid #009;
+    padding                :    5px;
+    text-align             :    center;
+}
+.my-popup-message
+{
+    font-size              :    80%;
+    padding                :    15px;
+}
+.my-popup-footer
+{
+    padding                :    5px;
+    text-align             :    center;
+    width                  :    100%;
+}

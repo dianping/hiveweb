@@ -6,6 +6,7 @@ public class HiveQueryInputBo implements IsSerializable {
 	private String hql;
 	private String database;
 	private String username;
+	private String realuser;
 	private long timestamp;
 	private boolean storeResult;
 	private int resultLimit;
@@ -83,6 +84,14 @@ public class HiveQueryInputBo implements IsSerializable {
 
 	public void setResultLocation(String resultLocation) {
 		this.resultLocation = resultLocation;
+	}
+
+	public String getRealuser() {
+		return realuser;
+	}
+
+	public void setRealuser(String realuser) {
+		this.realuser = realuser;
 	}
 
 	@Override

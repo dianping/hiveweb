@@ -8,6 +8,7 @@ import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
 import com.dianping.cosmos.hive.client.bo.ResultStatusBo;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -40,5 +41,5 @@ public interface HiveQueryService extends RemoteService {
 	
 	public ResultStatusBo createTable(String tokenid, String hql);
 	
-	
+	public ResultStatusBo uploadTableFile(String tokenid, String username, String dbname, String tablename, String filelocation, Boolean overwrite , String partionCond);
 }
