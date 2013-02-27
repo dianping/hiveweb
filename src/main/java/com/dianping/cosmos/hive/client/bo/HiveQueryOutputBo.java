@@ -12,6 +12,7 @@ public class HiveQueryOutputBo implements IsSerializable {
 	private List<String[]> data;
 	private String errorMsg;
 	private String resultFileAbsolutePath;
+	private Boolean success;
 
 	public HiveQueryOutputBo() {
 		data = new ArrayList<String[]>();
@@ -62,11 +63,19 @@ public class HiveQueryOutputBo implements IsSerializable {
 		this.resultFileAbsolutePath = resultFileAbsolutePath;
 	}
 
+	public Boolean getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(Boolean success) {
+		this.success = success;
+	}
+
 	@Override
 	public String toString() {
 		return "HiveQueryOutputBo [execTime=" + execTime + ", fieldSchema="
 				+ Arrays.toString(fieldSchema) + ", data=" + data
-				+ ", errorMsg=" + errorMsg + ", resultFileName="
-				+ resultFileAbsolutePath + "]";
+				+ ", errorMsg=" + errorMsg + ", resultFileAbsolutePath="
+				+ resultFileAbsolutePath + ", success=" + success + "]";
 	}
 }

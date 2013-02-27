@@ -38,7 +38,6 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-//@UrlPatternEntryPoint(value = "createtable.html")
 @UrlPatternEntryPoint(value = "createtable([^.]*).html(\\\\?.*)?")
 public class CreateTable extends LoginComponent implements EntryPoint {
 

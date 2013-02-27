@@ -98,7 +98,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 					+ queryEngine.getClass());
 		}
 
-		if (output != null && "".equals(output.getErrorMsg())) {
+		if (output != null && output.getSuccess() == true) {
 			// insert query history DB
 			String resultFileLocation = "";
 			if (!StringUtils.isBlank(output.getResultFileAbsolutePath())) {
@@ -198,7 +198,8 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		if (!StringUtils.isBlank(tokenid) && !StringUtils.isBlank(hql)) {
 			return hiveJdbcClient.executeHiveQuery(tokenid, hql);
 		}
-		ResultStatusBo r = new ResultStatusBo(false, "the input hql can not be empty");
+		ResultStatusBo r = new ResultStatusBo(false,
+				"the input hql can not be empty");
 		return r;
 	}
 
@@ -220,21 +221,19 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		String ticketCache = "/tmp/" + username + ".ticketcache";
 		String exportKRB5Cmd = "export KRB5CCNAME=" + ticketCache;
 		String hiveQueryCmd = "hive -e \"" + sb.toString() + "\"";
-		String[] shellCmd = { "bash", "-c", exportKRB5Cmd + ";" +hiveQueryCmd };
-		
+		String[] shellCmd = { "bash", "-c", exportKRB5Cmd + ";" + hiveQueryCmd };
+
 		logger.info("exec load data command:" + StringUtils.join(shellCmd, " "));
 		ShellCommandExecutor shExec = new ShellCommandExecutor(shellCmd);
-		
+
 		try {
 			shExec.execute();
 		} catch (IOException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Error while uploading file : " + filelocation
-						+ ", command:" + shellCmd + " , Exception: "
-						+ e.getMessage());
-				rs.setSuccess(false);
-				rs.setMessage(e.getMessage());
-			}
+			logger.error("Error while uploading file : " + filelocation
+					+ ", command:" + shellCmd + " , Exception: "
+					+ e.getMessage());
+			rs.setSuccess(false);
+			rs.setMessage(e.getMessage());
 		}
 		if (shExec.getExitCode() == 0) {
 			rs.setSuccess(true);

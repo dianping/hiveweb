@@ -64,10 +64,10 @@ class StreamToFileHandler extends BaseStreamHandler {
 			}
 			
 			if (lineNum >= fileStoreLineLimit) {
-				logger.info("start to destroy main process");
+				logger.info("start to manifest process kill status and destroy main process ");
+				super.setProcessKillStatus(true);
 				// finally destroy the hive process
 				super.proc.destroy();
-				super.setProcessKillStatus(true);
 			}
 		} catch (IOException ios) {
 			logger.error("Exception occurs in writing data to file:", ios);
@@ -92,7 +92,7 @@ class StreamToFileHandler extends BaseStreamHandler {
 					.parse(BasicUtils.openInputStream(
 							new File(outFileLocation), gzip), showLimit);
 		} catch (IOException e) {
-			logger.error("Exception occurs in parsing output:", e);
+			logger.error("Exception occurs in parsing result file : " + outFileLocation, e);
 			return null;
 		}
 	}

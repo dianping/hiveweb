@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -24,9 +25,8 @@ public class CustomPopupPanel extends PopupPanel{
 		setGlassEnabled(true);
 		
 		VerticalPanel PopUpPanelContents = new VerticalPanel();
+		PopUpPanelContents.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		setStyleName("my-popup");
-	    PopUpPanelContents = new VerticalPanel();
-	    setTitle("Title");
 	    message.setStyleName("my-popup-message");
 	    SimplePanel holder = new SimplePanel();
 	    holder.add(closeButton);
@@ -37,7 +37,6 @@ public class CustomPopupPanel extends PopupPanel{
 	}
 	
 	public void setMessage(String msg) {
-		this.message.setText(msg);
+		this.message.setHTML(msg);
 	}
-
 }

@@ -1,6 +1,5 @@
 package com.dianping.cosmos.hive.server;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -15,7 +14,6 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import sun.security.krb5.KrbException;
 import sun.security.krb5.internal.tools.kinit;
 
 import com.dianping.cosmos.hive.client.bo.LoginTokenBo;
@@ -36,14 +34,14 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 	private static final Log logger = LogFactory
 			.getLog(HiveQueryServiceImpl.class);
 
-	private final static long HALD_DAY_IN_MILLISECONDS = 12 * 60 * 60 * 1000L;
+	private final static long ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000L;
 
 	@Autowired
 	private UserLoginService userLoginService;
 
 	private static Cache<String, Date> tokenCache = CacheBuilder.newBuilder()
 			.concurrencyLevel(4).maximumSize(100000)
-			.expireAfterWrite(12, TimeUnit.HOURS)
+			.expireAfterWrite(24, TimeUnit.HOURS)
 			.removalListener(new RemovalListener<String, Date>() {
 
 				@Override
@@ -63,13 +61,12 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 		if (tokenCache.getIfPresent(tokenid) != null) {
 			Date addtime = tokenCache.getIfPresent(tokenid);
 			Date currenttime = new Date();
-			if (currenttime.getTime() - addtime.getTime() < HALD_DAY_IN_MILLISECONDS) {
+			if (currenttime.getTime() - addtime.getTime() < ONE_DAY_IN_MILLISECONDS) {
 				if (HiveJdbcClient.getUgiCache(tokenid) != null) {
-					logger.info(tokenid + " Authenticated");
 					return true;
 				}
 			} else {
-				logger.info("tokenid time expired, tokenid:" + tokenid
+				logger.debug("tokenid time expired, tokenid:" + tokenid
 						+ " addtime:" + addtime);
 			}
 		}
@@ -115,7 +112,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 					Map<String, Date> tokenCacheSnapshot = tokenCache.asMap();
 					for (Map.Entry<String, Date> t : tokenCacheSnapshot
 							.entrySet()) {
-						logger.info("tokenid:" + t.getKey() + " addtime:"
+						logger.debug("tokenid:" + t.getKey() + " addtime:"
 								+ t.getValue());
 					}
 				}

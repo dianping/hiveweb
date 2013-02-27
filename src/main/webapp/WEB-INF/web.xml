@@ -15,7 +15,7 @@
 	<context-param>
 		<!-- max size of the upload request -->
 		<param-name>maxSize</param-name>
-		<param-value>3145728</param-value>
+		<param-value>31457280</param-value>
 	</context-param>
 	<context-param>
 		<!-- Useful in development mode to slow down the uploads in fast networks. 
@@ -81,8 +81,6 @@
 	</servlet-mapping>
 
 	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
 		<welcome-file>home.html</welcome-file>
 	</welcome-file-list>
-
 </web-app>

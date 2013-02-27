@@ -6,7 +6,8 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 
 public class LoginComponent {
-	private static final int COOKIE_TIMEOUT = 1000 * 60 * 60 * 12;
+	public static final int COOKIE_TIMEOUT = 1000 * 60 * 60 * 24;
+	public static final String REDIRECT_URL = "http://data.dp/pluto/acl2hive.html";
 
 	private static String tokenid = Cookies.getCookie("tokenid") != null ? Cookies
 			.getCookie("tokenid") : "";
@@ -45,7 +46,7 @@ public class LoginComponent {
 	public static void cleanup() {
 		removeCookies();
 		Window.alert("登陆失败!");
-		Window.Location.assign("/index.html");
+		Window.Location.assign(REDIRECT_URL);
 	}
 
 	public native void redirect(String URL)

@@ -111,7 +111,6 @@ public class ShellCmdExecutor {
 					} catch (IOException e) {
 						logger.error("error occured when dump errorstream to status file", e);
 					}
-
 				}
 			});
 			t.setDaemon(true);
@@ -121,14 +120,21 @@ public class ShellCmdExecutor {
 		if (runningTaskMap.containsKey(queryId)) {
 			runningTaskMap.remove(queryId);
 		}
-
+		
+		// sleep one second for stdout stream collector thread to close file
+		Thread.sleep(1500);
+		
+		if (exitCode != 0) {
+			logger.info("exit code:" + exitCode  + " process kill status:" + outputHandler.getProcessKillStatus());
+		}
+		
 		/*
 		 * if the hive process was killed when it has exceeded the data file
 		 * line limit, it won't be an error, so return normal termination exit
 		 * code 0
 		 */
 		if (outputHandler.getProcessKillStatus()) {
-			logger.info("process was killed because of exceedance of data file line limit");
+			logger.info("process was killed because of exceedance of data file line limit, real exit code is " + exitCode);
 			return 0;
 		}
 		return exitCode;

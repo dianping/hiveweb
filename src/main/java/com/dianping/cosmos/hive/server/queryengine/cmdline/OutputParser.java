@@ -37,25 +37,28 @@ public class OutputParser {
 		LineIterator it = IOUtils.lineIterator(is, BasicUtils.ENCODING);
 		try {
 			// the first line is column names
+			int columnCount = 0;
 			if (it.hasNext()) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("start to set columns names to HiveQueryOutputBo");
 				}
 				String[] fieldSchema = parseOneLine(it.nextLine());
 				if (fieldSchema != null) {
+					logger.info("field schema: " + StringUtils.join(fieldSchema, '\t'));
 					result.setFieldSchema(fieldSchema);
+					columnCount = fieldSchema.length;
 				}
 			}
 			int lineNum = 0;
 			while (it.hasNext() && lineNum < limit) {
 				String data = it.nextLine();
 				String[] fieldsData = parseOneLine(data);
-				if (fieldsData != null) {
-					result.addOneRow(fieldsData);
+				if (fieldsData != null && columnCount == fieldsData.length) {
+					result.addOneRow(parseOneLine(data));
 				}
 				lineNum++;
 			}
-			logger.info("data row number:" + result.getData().size());
+			logger.info("data row count: " + result.getData().size());
 		} finally {
 			it.close();
 		}

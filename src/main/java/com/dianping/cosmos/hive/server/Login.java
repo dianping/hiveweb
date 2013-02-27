@@ -34,10 +34,10 @@ public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Log logger = LogFactory.getLog(Login.class);
 
-	private static final int HALD_DAY_IN_SECONDS = 12 * 60 * 60;
+	private static final int ONE_DAY_IN_SECONDS = 24 * 60 * 60;
 	private static final String LOGIN_KEY = "dp!@hiveLogin";
-	private static final String GET_PASSWORD_URL = "http://192.168.7.204:8080/pluto/json/getUserInfoPasswordForHive?";
-	private static final String HOME_PAGE = "http://10.1.77.84:8080/home.html";
+	private static final String GET_PASSWORD_URL = "http://data.dp/pluto/json/getUserInfoPasswordForHive?";
+	private static final String HOME_PAGE = "http://hive.dp/home.html";
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -96,10 +96,10 @@ public class Login extends HttpServlet {
 					Cookie ckToken = new Cookie("tokenid", tokenid);
 					Cookie ckAddtime = new Cookie("addtime", addtime.toString());
 
-					ckName.setMaxAge(HALD_DAY_IN_SECONDS);
-					ckRealuser.setMaxAge(HALD_DAY_IN_SECONDS);
-					ckToken.setMaxAge(HALD_DAY_IN_SECONDS);
-					ckAddtime.setMaxAge(HALD_DAY_IN_SECONDS);
+					ckName.setMaxAge(ONE_DAY_IN_SECONDS);
+					ckRealuser.setMaxAge(ONE_DAY_IN_SECONDS);
+					ckToken.setMaxAge(ONE_DAY_IN_SECONDS);
+					ckAddtime.setMaxAge(ONE_DAY_IN_SECONDS);
 
 					response.addCookie(ckName);
 					response.addCookie(ckRealuser);

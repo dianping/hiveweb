@@ -19,6 +19,7 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -36,6 +37,8 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	ListBox dbListBox;
 	@UiField
 	ListBox tableListBox;
+	@UiField
+	Label tableNameLabel;
 	@UiField(provided = true)
 	CellTable<FieldSchemaBo> tableSchemaTable;
 	@UiField
@@ -149,12 +152,15 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 			
 			@Override
 			public void onChange(ChangeEvent event) {
-				getTableSchema();
+				String dbName = dbListBox.getValue(dbListBox.getSelectedIndex());
+				String tableName = tableListBox.getValue(tableListBox.getSelectedIndex());
+				tableNameLabel.setText(dbName + "." + tableName);
+				getTableSchema(dbName, tableName);
 			}
 		});
 	}
 
-	private void getTables(String dbname) {
+	private void getTables(final String dbname) {
 		if (dbname == null || dbname.equals("")) {
 			return;
 		} else {
@@ -166,9 +172,15 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 							tableListBox.clear();
 							tables = result;
 							for (int i = 0; i < tables.size(); i++) {
+								if (i == 0) {
+									tableNameLabel.setText(dbname + "." + tables.get(i));
+								}
+								
 								tableListBox.addItem(tables.get(i));
 							}
-							getTableSchema();
+							String dbName = dbListBox.getValue(dbListBox.getSelectedIndex());
+							String tableName = tableListBox.getValue(tableListBox.getSelectedIndex());
+							getTableSchema(dbName, tableName);
 						}
 
 						@Override
@@ -179,10 +191,7 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 		}
 	}
 
-	private void getTableSchema() {
-		final String dbName = dbListBox.getValue(dbListBox.getSelectedIndex());
-		final String tableName = tableListBox.getValue(tableListBox
-				.getSelectedIndex());
+	private void getTableSchema(final String  dbName, final String tableName) {
 		if (!dbName.equals("") && !tableName.equals("")) {
 			hiveQueryService.getTableSchema(getTokenid(), dbName, tableName,
 					new AsyncCallback<List<FieldSchemaBo>>() {

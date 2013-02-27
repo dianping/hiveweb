@@ -29,11 +29,6 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 
 	@Override
 	public HiveQueryOutputBo getQueryResult(HiveQueryInputBo input) {
-		// preparation
-		if (input == null) {
-			logger.error("HiveQueryInput is empty!");
-			return null;
-		}
 		String username = input.getUsername();
 		String hiveCmd = input.getHql().trim();
 		if (StringUtils.isEmpty(hiveCmd)) {
@@ -55,15 +50,8 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 		String resultLocation = input.getResultLocation();
 		logger.debug("statusLocation:" + statusLocation + " result location:" + resultLocation);
 
-		IStreamHandler resultHandler = null;
-
-//		if (storeResultToFile) {
-			resultHandler = StreamHandlerFactory
+		IStreamHandler resultHandler = StreamHandlerFactory
 					.createFileResultHandler(resultLocation);
-//		} else {
-//			resultHandler = StreamHandlerFactory.createMemResultHandler();
-//			
-//		}
 		resultHandler.setShowLimit(limit);
 
 		String ticketCache = "/tmp/" + username + ".ticketcache"; 
@@ -72,6 +60,7 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 				"\\\"\"");
 		
 		HiveQueryOutputBo res = new HiveQueryOutputBo(); 
+		res.setSuccess(false);
 		// execute cmd
 		int exitCode = -1;
 		try {
@@ -82,12 +71,22 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 		}
 		if (exitCode != 0) {
 			logger.error("Hive Command is NOT executed successfully! The exit code of hive command is "
-					+ exitCode);
+					+ exitCode + " , query command: " + cmd);
 			res.setErrorMsg(readStatusFileToString(querId));
+			res.setSuccess(false);
 			return res;
 		}
 		
 		res = resultHandler.getResult();
+		if (res == null) {
+			res = new HiveQueryOutputBo();
+			res.setSuccess(false);
+			res.setErrorMsg(readStatusFileToString(querId));
+			return res;
+		}
+		
+		res.setSuccess(true);
+		res.setErrorMsg(readStatusFileToString(querId));
 		
 		// remove data result file if user didn't request to store
 		if (storeResultToFile) {
@@ -118,7 +117,6 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 					+ statusFileLocation, e);
 			return StringUtils.EMPTY;
 		}
-		
 	}
 
 	private static String getStatusFileLocation(String queryId) {

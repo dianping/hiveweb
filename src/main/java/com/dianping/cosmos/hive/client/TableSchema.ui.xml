@@ -37,6 +37,7 @@
 						</g:HTMLPanel>
 						<g:ListBox ui:field="tableListBox" visibleItemCount="1"
 							width="10em" />
+						<g:Label  ui:field="tableNameLabel" />
 					</g:VerticalPanel>
 				</g:west>
 				<g:north size="200">

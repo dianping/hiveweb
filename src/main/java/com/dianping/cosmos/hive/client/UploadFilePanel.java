@@ -133,7 +133,7 @@ public class UploadFilePanel extends HTMLPanel {
 
 									@Override
 									public void onFailure(Throwable caught) {
-										popupPanel.setMessage("上传数据失败!");
+										popupPanel.setMessage("上传数据失败!!");
 										popupPanel.center();
 										submitBut.setEnabled(true);
 									}

@@ -48,6 +48,6 @@ public class Logout extends HttpServlet {
 				}
 			}
 		}
-		response.sendRedirect("index.html");
+		response.sendRedirect("http://data.dp/pluto/acl2hive.html");
 	}
 }

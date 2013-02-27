@@ -56,9 +56,10 @@ import com.google.gwt.view.client.HasData;
 public class HiveQuery extends LoginComponent implements EntryPoint {
 	private static HiveQueryUiBinder uiBinder = GWT
 			.create(HiveQueryUiBinder.class);
+
 	interface HiveQueryUiBinder extends UiBinder<Widget, HiveQuery> {
 	}
-	
+
 	private final static int QUERY_RESULT_SHOW_ROW_NUMBER = 500;
 
 	@UiField(provided = true)
@@ -155,11 +156,11 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 						caught.printStackTrace();
 					}
 				});
-		
+
 		getFavoriteQuerys();
 	}
-	
-	private void getFavoriteQuerys(){
+
+	private void getFavoriteQuerys() {
 		hiveQueryService.getFavoriteQuery(getRealuser(),
 				new AsyncCallback<List<QueryFavoriteBo>>() {
 
@@ -264,6 +265,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		isQueryStopped = false;
 
 		progressTextArea.setText("正在执行语句 .........");
+		clearCellTableData();	
 		hiveQueryService.getQueryResult(hqInputBo,
 				new AsyncCallback<HiveQueryOutputBo>() {
 
@@ -276,38 +278,31 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 						String errorMessage = result.getErrorMsg();
 						if (errorMessage != null && !"".equals(errorMessage)) {
 							progressTextArea.setText(errorMessage);
-						} else {
-							removeCellTableAllColumns(cellTable, indexedColumns);
-							indexedColumns.clear();
-							int rowCount = result.getData().size();
-							int columnCount = result.getFieldSchema().length;
-							for (int i = 0; i < columnCount; i++) {
-								IndexedColumn col = new IndexedColumn(i);
-								cellTable.addColumn(col,
-										result.getFieldSchema()[i]);
-								indexedColumns.add(col);
-							}
-							data = result.getData();
-							cellTable.setRowCount(rowCount);
-							provider = new AsyncDataProvider<String[]>() {
-								@Override
-								protected void onRangeChanged(
-										HasData<String[]> display) {
-									int start = display.getVisibleRange()
-											.getStart();
-									int end = start
-											+ display.getVisibleRange()
-													.getLength();
-									end = end >= data.size() ? data.size()
-											: end;
-									List<String[]> sub = data.subList(start,
-											end);
-									updateRowData(start, sub);
-								}
-							};
-							provider.addDataDisplay(cellTable);
-							provider.updateRowCount(data.size(), true);
 						}
+						int rowCount = result.getData().size();
+						int columnCount = result.getFieldSchema().length;
+						for (int i = 0; i < columnCount; i++) {
+							IndexedColumn col = new IndexedColumn(i);
+							cellTable.addColumn(col, result.getFieldSchema()[i]);
+							indexedColumns.add(col);
+						}
+						data = result.getData();
+						cellTable.setRowCount(rowCount);
+						provider = new AsyncDataProvider<String[]>() {
+							@Override
+							protected void onRangeChanged(
+									HasData<String[]> display) {
+								int start = display.getVisibleRange()
+										.getStart();
+								int end = start
+										+ display.getVisibleRange().getLength();
+								end = end >= data.size() ? data.size() : end;
+								List<String[]> sub = data.subList(start, end);
+								updateRowData(start, sub);
+							}
+						};
+						provider.addDataDisplay(cellTable);
+						provider.updateRowCount(data.size(), true);
 					}
 
 					@Override
@@ -317,10 +312,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 						killQueryBut.setEnabled(false);
 						if (isQueryStopped) {
 							progressTextArea.setText("停止查询成功!");
-						} 
-//						else {
-//							progressTextArea.setText("查询出错了!");
-//						}
+						}
 					}
 				});
 
@@ -333,37 +325,47 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		timer.scheduleRepeating(2000);
 	}
 	
-	private void cancelTimer() {
-	    if (timer != null) {
-	    	timer.cancel();
-	    	timer = null;
-	    }
+	private void clearCellTableData() {
+		provider = null;
+		data = null;
+		removeCellTableAllColumns(cellTable, indexedColumns);
+		indexedColumns.clear();
+		cellTable.setRowCount(0);
 	}
-	
+
+	private void cancelTimer() {
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+		}
+	}
+
 	private void getQueryStatus(String queryid) {
-		hiveQueryService.getQueryStatus(queryid,
-				new AsyncCallback<String>() {
+		hiveQueryService.getQueryStatus(queryid, new AsyncCallback<String>() {
 
-					@Override
-					public void onSuccess(String result) {
-						progressTextArea.setText(result);
-						progressTextArea.getElement().setScrollTop(
-								progressTextArea.getElement()
-										.getScrollHeight());
-					}
+			@Override
+			public void onSuccess(String result) {
+				progressTextArea.setText(result);
+				progressTextArea.getElement().setScrollTop(
+						progressTextArea.getElement().getScrollHeight());
+			}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						progressTextArea.setText("查询进度返回错误!");
-					}
-				});
-		
+			@Override
+			public void onFailure(Throwable caught) {
+				progressTextArea.setText("查询进度返回错误!");
+			}
+		});
+
 	}
 
 	@UiHandler("saveQuery")
 	void saveQueryButtonHandleClick(ClickEvent e) {
+		String latestSaveQueryName = "";
+		if (queryFavoriteListBox.getItemCount() > 1) {
+			latestSaveQueryName = queryFavoriteListBox.getItemText(1);
+		}
 		DialogBox dlg = new SaveQueryDialog(hiveQueryService, getRealuser(),
-				hqlTextArea.getValue().trim());
+				hqlTextArea.getValue().trim(), latestSaveQueryName);
 		dlg.center();
 	}
 
@@ -443,7 +445,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	static class SaveQueryDialog extends DialogBox {
 
 		public SaveQueryDialog(final HiveQueryServiceAsync hiveQueryService,
-				final String username, final String hql) {
+				final String username, final String hql, final String defaultQueryName) {
 			setText("查询另存为");
 
 			VerticalPanel vPanel = new VerticalPanel();
@@ -453,6 +455,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 
 			final HTML msg = new HTML("<br /><b>请输入保存的查询名：</b>", true);
 			final TextBox queryTextBox = new TextBox();
+			queryTextBox.setText(defaultQueryName);
 
 			Button submitButton = new Button("确认", new ClickHandler() {
 				@Override
@@ -466,7 +469,6 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 									@Override
 									public void onSuccess(Boolean result) {
 										hide();
-										
 									}
 
 									@Override
@@ -485,14 +487,13 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 					hide();
 				}
 			});
-
 			hPanel.add(submitButton);
 			hPanel.add(closeButton);
 			vPanel.add(msg);
 			vPanel.add(queryTextBox);
 			vPanel.add(hPanel);
 
-			//setAnimationEnabled(true);
+			// setAnimationEnabled(true);
 			setWidget(vPanel);
 			setGlassEnabled(true);
 		}

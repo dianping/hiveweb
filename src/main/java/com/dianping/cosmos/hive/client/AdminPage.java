@@ -23,12 +23,12 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-@UrlPatternEntryPoint(value = "(index.html)?(\\\\?gwt.codesvr=127.0.0.1:9997)?")
-public class LoginPage extends LoginComponent implements EntryPoint {
-	private static LoginViewUiBinder uiBinder = GWT
-			.create(LoginViewUiBinder.class);
+@UrlPatternEntryPoint(value = "admin.html")
+public class AdminPage extends LoginComponent implements EntryPoint {
+	private static AdminViewUiBinder uiBinder = GWT
+			.create(AdminViewUiBinder.class);
 
-	interface LoginViewUiBinder extends UiBinder<Widget, LoginPage> {
+	interface AdminViewUiBinder extends UiBinder<Widget, AdminPage> {
 	}
 
 	@UiField
@@ -121,8 +121,7 @@ public class LoginPage extends LoginComponent implements EntryPoint {
 							} else {
 								setCookies(u, u, result.getTokenid(),
 										result.getAddtime());
-								String link = "/home.html";
-								Window.Location.assign(link);
+								Window.Location.assign("/home.html");
 							}
 						}
 
