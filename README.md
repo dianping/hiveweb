@@ -12,3 +12,7 @@ hiveweb
 
 
 ## Installation
+
+
+## Attention
+ln -s /usr/local/hadoop/hive-udf/hive-init.sql /usr/local/hadoop/hive-release/bin/.hiverc

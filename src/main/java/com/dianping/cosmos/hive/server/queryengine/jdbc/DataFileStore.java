@@ -34,6 +34,7 @@ public class DataFileStore {
 	public final static String DEFAULT_CODEC_CLASS = "org.apache.hadoop.io.compress.GzipCodec";
 	public final static int BUFFER_SIZE = 8 * 1024;
 	public final static String ENCODING = "utf-8";
+	public final static String FILE_EXTENSION = "xls.gz";
 
 	static {
 		ResourceBundle bundle = ResourceBundle.getBundle("context");
@@ -41,7 +42,8 @@ public class DataFileStore {
 				.getString("hive-web.store.data.location");
 		QUERY_STATUS_LOCATION = bundle
 				.getString("hive-web.store.query.status.location");
-		UPLOAD_DIR_LOCATION =bundle.getString("hive-web.store.upload.location");
+		UPLOAD_DIR_LOCATION = bundle
+				.getString("hive-web.store.upload.location");
 		FILE_STORE_LINE_LIMIT = tryParseInt(
 				bundle.getString("hive-web.store.data.file.line.limit"),
 				DEFAULT_FILE_STORE_LINE_LIMIT);
@@ -115,15 +117,18 @@ public class DataFileStore {
 			String queryId) {
 		String fileName = getStoreFileName(tokenid, username, database, hql,
 				timestamp, queryId);
-		return FILE_STORE_DIRECTORY_LOCATION + File.separator + fileName;
+		StringBuilder sb = new StringBuilder();
+		sb.append(FILE_STORE_DIRECTORY_LOCATION).append(File.separator)
+				.append(fileName).append(".").append(FILE_EXTENSION);
+		return sb.toString();
 	}
 
 	public static String getStoreFileName(String tokenid, String username,
 			String database, String hql, long timestamp, String queryId) {
 		String input = tokenid + username + database + hql + timestamp
 				+ queryId;
-		String md5 = getMD5Hash(input);
-		return md5 + ".gz";
+		String md5Filename = getMD5Hash(input);
+		return md5Filename;
 	}
 
 	private static String getMD5Hash(String input) {

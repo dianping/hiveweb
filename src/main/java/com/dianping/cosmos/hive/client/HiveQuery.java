@@ -243,7 +243,8 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 			selectedText = hqlTextArea.getValue().trim();
 		}
 
-		if ("".equals(selectedText)) {
+		// filter local command or empty command
+		if ("".equals(selectedText) || selectedText.startsWith("!")) {
 			return;
 		}
 
