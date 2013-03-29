@@ -10,6 +10,8 @@ public interface IStreamHandler extends Runnable{
 	
 	public void setShowLimit(int limit);
 	
+	public void setSaveRecordsLimit(int limit);
+	
 	public void setExecuteProcess(Process proc);
 	
 	public Boolean getProcessKillStatus();

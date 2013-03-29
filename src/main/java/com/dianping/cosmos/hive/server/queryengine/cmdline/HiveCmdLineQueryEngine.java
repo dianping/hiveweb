@@ -39,7 +39,7 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 
 		boolean storeResultToFile = input.isStoreResult();
 		String querId = input.getQueryid();
-		int limit = input.getResultLimit();
+		int saveToFileRecordslimit = input.getResultLimit();
 
 		if (StringUtils.isEmpty(username)) {
 			logger.error("Input username is empty!");
@@ -52,7 +52,10 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 
 		IStreamHandler resultHandler = StreamHandlerFactory
 					.createFileResultHandler(resultLocation);
-		resultHandler.setShowLimit(limit);
+		resultHandler.setShowLimit(500);
+		if (saveToFileRecordslimit > 0) {
+			resultHandler.setSaveRecordsLimit(saveToFileRecordslimit);
+		}
 
 		String ticketCache = "/tmp/" + username + ".ticketcache"; 
 		String cmd = joinString("bash -c \"",
@@ -61,38 +64,42 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 		
 		HiveQueryOutputBo res = new HiveQueryOutputBo(); 
 		res.setSuccess(false);
-		// execute cmd
-		int exitCode = -1;
+		
 		try {
-			exitCode = ShellCmdExecutor.getInstance().execute(cmd, querId,
-					resultHandler, statusLocation);
-		} catch (ShellCmdExecException e) {
-			logger.error(e);
-		}
-		if (exitCode != 0) {
-			logger.error("Hive Command is NOT executed successfully! The exit code of hive command is "
-					+ exitCode + " , query command: " + cmd);
+			int exitCode = -1;
+			try {
+				// execute cmd
+				exitCode = ShellCmdExecutor.getInstance().execute(cmd, querId,
+						resultHandler, statusLocation);
+			} catch (ShellCmdExecException e) {
+				logger.error(e);
+			}
+			
+			if (exitCode != 0) {
+				logger.error("Hive Command is NOT executed successfully! The exit code of hive command is "
+						+ exitCode + " , query command: " + cmd);
+				res.setErrorMsg(readStatusFileToString(querId));
+				res.setSuccess(false);
+				return res;
+			}
+			
+			res = resultHandler.getResult();
+			if (res == null) {
+				res = new HiveQueryOutputBo();
+				res.setSuccess(false);
+				res.setErrorMsg(readStatusFileToString(querId));
+				return res;
+			}
+			
+			res.setSuccess(true);
 			res.setErrorMsg(readStatusFileToString(querId));
-			res.setSuccess(false);
-			return res;
-		}
-		
-		res = resultHandler.getResult();
-		if (res == null) {
-			res = new HiveQueryOutputBo();
-			res.setSuccess(false);
-			res.setErrorMsg(readStatusFileToString(querId));
-			return res;
-		}
-		
-		res.setSuccess(true);
-		res.setErrorMsg(readStatusFileToString(querId));
-		
-		// remove data result file if user didn't request to store
-		if (storeResultToFile) {
-			res.setResultFileAbsolutePath(resultLocation);
-		}else {
-			FileUtils.deleteQuietly(new File(resultLocation));
+		} finally {
+			// remove data result file if user didn't request to store
+			if (storeResultToFile) {
+				res.setResultFileAbsolutePath(resultLocation);
+			}else {
+				FileUtils.deleteQuietly(new File(resultLocation));
+			}
 		}
 		return res;
 	}

@@ -1,5 +1,6 @@
 package com.dianping.cosmos.hive.server;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -14,13 +15,12 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import sun.security.krb5.internal.tools.kinit;
-
 import com.dianping.cosmos.hive.client.bo.LoginTokenBo;
 import com.dianping.cosmos.hive.client.service.LoginService;
 import com.dianping.cosmos.hive.server.queryengine.jdbc.HiveJdbcClient;
 import com.dianping.cosmos.hive.server.store.domain.UserLogin;
 import com.dianping.cosmos.hive.server.store.service.UserLoginService;
+import com.dp.cosmos.hadoopKerberosLogin;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
@@ -77,9 +77,9 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 	public LoginTokenBo authenticate(String username, String password) {
 		LoginTokenBo tokenBo = null;
 		try {
-			kinit.createTicket(username, password, "/tmp/" + username
-					+ ".ticketcache");
-		} catch (Exception e) {
+			hadoopKerberosLogin.loginFromPassword(username, password, "/tmp/"
+					+ username + ".ticketcache");
+		} catch (IOException e) {
 			logger.error("create ticket cache failed:" + e);
 			return null;
 		}

@@ -96,4 +96,9 @@ class StreamToFileHandler extends BaseStreamHandler {
 			return null;
 		}
 	}
+
+	@Override
+	public void setSaveRecordsLimit(int limit) {
+		this.fileStoreLineLimit = limit;
+	}
 }

@@ -25,10 +25,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import sun.security.krb5.internal.tools.kinit;
-
 import com.dianping.cosmos.hive.server.queryengine.jdbc.HiveJdbcClient;
 import com.dianping.cosmos.hive.server.rijndael.Rijndael_Util;
+import com.dp.cosmos.hadoopKerberosLogin;
 
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -63,13 +62,13 @@ public class Login extends HttpServlet {
 					+ groupPasswd);
 
 			try {
-				kinit.createTicket(groupUsername, groupPasswd, "/tmp/"
-						+ groupUsername + ".ticketcache");
-			} catch (Exception e) {
+				hadoopKerberosLogin.loginFromPassword(groupUsername,
+						groupPasswd, "/tmp/" + groupUsername + ".ticketcache");
+			} catch (IOException e) {
 				logger.error("kinit create ticket cache failed:" + e);
 				return;
 			}
-			
+
 			UserGroupInformation ugi = Krb5Login.getVerifiedUgi(groupUsername,
 					groupPasswd);
 			if (ugi == null) {

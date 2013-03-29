@@ -182,9 +182,9 @@
 			<version>1.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.dianping.kerberos</groupId>
-			<artifactId>kinit</artifactId>
-			<version>0.0.1</version>
+			<groupId>com.dp.cosmos</groupId>
+			<artifactId>cosmos-auth</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

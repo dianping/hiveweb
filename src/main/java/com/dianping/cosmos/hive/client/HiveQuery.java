@@ -60,8 +60,6 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	interface HiveQueryUiBinder extends UiBinder<Widget, HiveQuery> {
 	}
 
-	private final static int QUERY_RESULT_SHOW_ROW_NUMBER = 500;
-
 	@UiField(provided = true)
 	CellTable<String[]> cellTable;
 	@UiField(provided = true)
@@ -76,6 +74,8 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	TextArea progressTextArea;
 	@UiField
 	CheckBox isStoreFile;
+	@UiField
+	ListBox saveRecordsListBox;
 	@UiField
 	Button submitBut;
 	@UiField
@@ -252,7 +252,8 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		hqInputBo.setHql(selectedText);
 		hqInputBo.setDatabase(dbListBox.getItemText(dbListBox
 				.getSelectedIndex()));
-		hqInputBo.setResultLimit(QUERY_RESULT_SHOW_ROW_NUMBER);
+		hqInputBo.setResultLimit(Integer.parseInt(saveRecordsListBox
+				.getItemText(saveRecordsListBox.getSelectedIndex())));
 		hqInputBo.setTimestamp(new Date().getTime());
 		hqInputBo.setUsername(getUsername());
 		hqInputBo.setRealuser(getRealuser());
@@ -266,7 +267,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		isQueryStopped = false;
 
 		progressTextArea.setText("正在执行语句 .........");
-		clearCellTableData();	
+		clearCellTableData();
 		hiveQueryService.getQueryResult(hqInputBo,
 				new AsyncCallback<HiveQueryOutputBo>() {
 
@@ -325,7 +326,7 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		timer.schedule(2000);
 		timer.scheduleRepeating(2000);
 	}
-	
+
 	private void clearCellTableData() {
 		provider = null;
 		data = null;
@@ -428,6 +429,10 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		Widget widget = uiBinder.createAndBindUi(this);
 		killQueryBut.setEnabled(false);
 
+		saveRecordsListBox.addItem("100000");
+		saveRecordsListBox.addItem("500000");
+		saveRecordsListBox.addItem("1000000");
+
 		RootPanel.get("HiveQuery").add(widget);
 	}
 
@@ -446,7 +451,8 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	static class SaveQueryDialog extends DialogBox {
 
 		public SaveQueryDialog(final HiveQueryServiceAsync hiveQueryService,
-				final String username, final String hql, final String defaultQueryName) {
+				final String username, final String hql,
+				final String defaultQueryName) {
 			setText("查询另存为");
 
 			VerticalPanel vPanel = new VerticalPanel();

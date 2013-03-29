@@ -29,4 +29,7 @@ class StreamToResultHandler extends BaseStreamHandler{
 		return result;
 	}
 
+	@Override
+	public void setSaveRecordsLimit(int limit) {
+	}
 }

@@ -43,6 +43,7 @@
 			</g:HorizontalPanel>
 			<g:HorizontalPanel spacing='3'>
 				<g:CheckBox ui:field="isStoreFile" text="保存查询结果" />
+				<g:ListBox ui:field="saveRecordsListBox" visibleItemCount="1" />
 				<g:Button ui:field="submitBut" text="提交" width="120px" />
 				<g:Button ui:field="submitQPBut" text="执行计划" width="120px" />
 				<g:Button ui:field="killQueryBut" text="停止查询" width="120px" />
