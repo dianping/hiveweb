@@ -133,7 +133,7 @@ public class Login extends HttpServlet {
 		HttpURLConnection urlConnection = null;
 		StringBuilder sb = new StringBuilder(GET_PASSWORD_URL);
 		sb.append("login_id=").append(loginid).append("&user_id=")
-				.append(userGroupid).append("&token=xiiqwpbtanvgcnafmnfw");
+				.append(userGroupid).append("&access_token=xiiqwpbtanvgcnafmnfw");
 		URL url = new URL(sb.toString());
 		urlConnection = (HttpURLConnection) url.openConnection();
 		urlConnection.setRequestMethod("GET");
