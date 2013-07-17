@@ -125,7 +125,8 @@ public class ShellCmdExecutor {
 		Thread.sleep(1500);
 		
 		if (exitCode != 0) {
-			logger.info("exit code:" + exitCode  + " process kill status:" + outputHandler.getProcessKillStatus());
+			logger.error("exit code:" + exitCode  + " process was  killed unexpectedly " +
+					"process kill status:" + outputHandler.getProcessKillStatus());
 		}
 		
 		/*

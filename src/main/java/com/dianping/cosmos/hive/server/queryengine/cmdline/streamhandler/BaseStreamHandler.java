@@ -10,7 +10,7 @@ abstract class BaseStreamHandler implements IStreamHandler{
 	
 	protected int showLimit;
 	
-	protected Boolean killStatus;
+	protected volatile Boolean killStatus;
 
 	public void setInputStream(InputStream is){
 		this.is = is;

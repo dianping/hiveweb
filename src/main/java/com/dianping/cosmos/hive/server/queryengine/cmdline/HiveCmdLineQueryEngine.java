@@ -84,6 +84,7 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 			}
 			
 			res = resultHandler.getResult();
+			
 			if (res == null) {
 				res = new HiveQueryOutputBo();
 				res.setSuccess(false);
@@ -97,7 +98,7 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 			// remove data result file if user didn't request to store
 			if (storeResultToFile) {
 				res.setResultFileAbsolutePath(resultLocation);
-			}else {
+			} else {
 				FileUtils.deleteQuietly(new File(resultLocation));
 			}
 		}
