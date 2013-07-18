@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class HiveQueryInputBo implements IsSerializable {
 	private String hql;
+	private String engineMode;
 	private String database;
 	private String username;
 	private String realuser;
@@ -101,6 +102,14 @@ public class HiveQueryInputBo implements IsSerializable {
 				+ ", storeResult=" + storeResult + ", resultLimit="
 				+ resultLimit + ", tokenid=" + tokenid + ", queryid=" + queryid
 				+ ", resultLocation=" + resultLocation + "]";
+	}
+
+	public void setEngineMode(String engineMode) {
+		this.engineMode = engineMode;
+	}
+
+	public String getEngineMode() {
+		return engineMode;
 	}
 
 }

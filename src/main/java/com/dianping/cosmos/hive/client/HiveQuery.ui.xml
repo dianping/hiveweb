@@ -30,8 +30,10 @@
 	<g:VerticalPanel spacing='3'>
 		<g:VerticalPanel width="100%" spacing='3'>
 			<g:HorizontalPanel>
-				<g:HTMLPanel><big>请选择数据库:</big></g:HTMLPanel>
+				<g:HTMLPanel><big>数据库:</big></g:HTMLPanel>
 				<g:ListBox ui:field="dbListBox" visibleItemCount="1" />
+				<g:HTMLPanel><big>执行引擎:</big></g:HTMLPanel>
+				<g:ListBox ui:field="engineListBox" visibleItemCount="1" />
 				<g:HTMLPanel>&nbsp;&nbsp;&nbsp;&nbsp;<big>收藏语句:</big></g:HTMLPanel>
 				<g:ListBox ui:field="queryFavoriteListBox" visibleItemCount="1" />
 			</g:HorizontalPanel>

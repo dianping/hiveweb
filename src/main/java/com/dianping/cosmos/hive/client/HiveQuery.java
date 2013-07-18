@@ -67,6 +67,8 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	@UiField
 	ListBox dbListBox;
 	@UiField
+	ListBox engineListBox;
+	@UiField
 	ListBox queryFavoriteListBox;
 	@UiField(provided = true)
 	AutoCompleteTextArea hqlTextArea;
@@ -250,6 +252,8 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 
 		HiveQueryInputBo hqInputBo = new HiveQueryInputBo();
 		hqInputBo.setHql(selectedText);
+		hqInputBo.setEngineMode(engineListBox.getItemText(engineListBox
+				.getSelectedIndex()));
 		hqInputBo.setDatabase(dbListBox.getItemText(dbListBox
 				.getSelectedIndex()));
 		hqInputBo.setResultLimit(Integer.parseInt(saveRecordsListBox
@@ -432,15 +436,24 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 		saveRecordsListBox.addItem("100000");
 		saveRecordsListBox.addItem("500000");
 		saveRecordsListBox.addItem("1000000");
+		constructEngineListBox();
 
 		RootPanel.get("HiveQuery").add(widget);
+	}
+
+	private void constructEngineListBox() {
+		engineListBox.addItem("hive");
+		if (Constants.ALLOWED_USER.contains(getRealuser())
+				|| Constants.ALLOWED_GROUP.contains(getUsername())) {
+			engineListBox.addItem("shark");
+		}
 	}
 
 	private void constructSampleData() {
 		String[] headers = new String[] { "col1", "col2", "col3", "col4",
 				"col5", "col6" };
 
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < headers.length; i++) {
 			IndexedColumn col = new IndexedColumn(i);
 			indexedColumns.add(col);
 			cellTable.addColumn(col, headers[i]);

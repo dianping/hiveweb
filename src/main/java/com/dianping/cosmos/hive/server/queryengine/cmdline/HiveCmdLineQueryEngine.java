@@ -26,11 +26,13 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 	private static final String KILL_COMMAND_PREFIX = "Kill Command =";
 	private static final int KILL_COMMAND_PREFIX_LENGTH = KILL_COMMAND_PREFIX
 			.length();
+	private static final String SHARK_SETTINGS="set dfs.umaskmode=000;set fs.default.name=hdfs://10.2.6.143;";
 
 	@Override
 	public HiveQueryOutputBo getQueryResult(HiveQueryInputBo input) {
 		String username = input.getUsername();
 		String hiveCmd = input.getHql().trim();
+		String engineMode = input.getEngineMode();
 		if (StringUtils.isEmpty(hiveCmd)) {
 			logger.error("Input hqls is empty!");
 			return null;
@@ -58,9 +60,14 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 		}
 
 		String ticketCache = "/tmp/" + username + ".ticketcache"; 
+		if (engineMode.equals("shark")) {
+			hiveCmd = SHARK_SETTINGS + hiveCmd;
+		}
+		
 		String cmd = joinString("bash -c \"",
-				"export KRB5CCNAME=" ,ticketCache , "; hive --hiveconf hive.cli.print.header=true -e \\\"", hiveCmd,
+				"export KRB5CCNAME=" ,ticketCache ,  ";", engineMode,  " --hiveconf hive.cli.print.header=true -e \\\"", hiveCmd,
 				"\\\"\"");
+		logger.info("realuser:" + input.getRealuser()  + ", cmd: " + cmd);
 		
 		HiveQueryOutputBo res = new HiveQueryOutputBo(); 
 		res.setSuccess(false);
