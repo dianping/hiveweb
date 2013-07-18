@@ -59,6 +59,10 @@ class StreamToFileHandler extends BaseStreamHandler {
 			int lineNum = 0;
 			while (it.hasNext() && lineNum++ < fileStoreLineLimit) {
 				String line = it.nextLine();
+				// for temporary use in shark execution mode
+				if (line.contains("spray-io-worker")) {
+					continue;
+				}
 				bops.write(line.getBytes());
 				bops.write(10);
 			}
