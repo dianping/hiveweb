@@ -10,7 +10,7 @@
 		}
 	</ui:style>
 	<g:VerticalPanel width="100%">
-		<c:CellTable addStyleNames='{style.cellTable}' pageSize='15'
+		<c:CellTable addStyleNames='{style.cellTable}' pageSize='20'
 			ui:field='cellTable' />
 		<c:SimplePager ui:field='pager' />
 	</g:VerticalPanel>

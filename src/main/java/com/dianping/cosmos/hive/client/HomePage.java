@@ -6,7 +6,7 @@ import org.gwtmultipage.client.UrlPatternEntryPoint;
 
 import com.dianping.cosmos.hive.client.service.HiveQueryServiceAsync;
 import com.dianping.cosmos.hive.client.service.LoginServiceAsync;
-import com.dianping.cosmos.hive.shared.util.StringUtils;
+import com.dianping.cosmos.hive.shared.util.StrUtils;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -18,15 +18,13 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-//@UrlPatternEntryPoint(value = "home.html")
-@UrlPatternEntryPoint(value = "home([^.]*).html(\\\\?.*)?")
+@UrlPatternEntryPoint(value = "(home.html)?")
 public class HomePage extends LoginComponent implements EntryPoint {
 
 	private CaptionPanel latestQueryHistoryStastics;
 	private CaptionPanel hiveQueryCap;
 	private CaptionPanel tableSchemaCap;
 	private CaptionPanel queryHistoryCap;
-
 	private CaptionPanel descStmt;
 
 	private HIVEMessages messages = (HIVEMessages) GWT
@@ -56,7 +54,6 @@ public class HomePage extends LoginComponent implements EntryPoint {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							caught.printStackTrace();
 							cleanup();
 						}
 					});
@@ -97,7 +94,7 @@ public class HomePage extends LoginComponent implements EntryPoint {
 		tableSchemaVP.add(introTS);
 		tableSchemaCap.add(tableSchemaVP);
 
-		final HTML introQH = new HTML(messages.homepage_TableSchemaDesc(), true);
+		final HTML introQH = new HTML(messages.homepage_QueryHistoryDesc(), true);
 		final VerticalPanel queryHistoryVP = new VerticalPanel();
 		queryHistoryVP.add(introQH);
 		queryHistoryCap.add(queryHistoryVP);
@@ -131,7 +128,7 @@ public class HomePage extends LoginComponent implements EntryPoint {
 
 			@Override
 			public void onSuccess(List<String> result) {
-				latestQueryHistoryStastics.add(new HTML(StringUtils
+				latestQueryHistoryStastics.add(new HTML(StrUtils
 						.listToString(result)));
 			}
 

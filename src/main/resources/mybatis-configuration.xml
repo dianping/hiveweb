@@ -19,6 +19,7 @@
     <typeAliases>  
         <typeAlias type="com.dianping.cosmos.hive.server.store.domain.QueryHistory" alias="QueryHistory"/>
         <typeAlias type="com.dianping.cosmos.hive.server.store.domain.UserLogin" alias="UserLogin"/>
+        <typeAlias type="com.dianping.cosmos.hive.server.store.domain.QueryFavorite" alias="QueryFavorite"/>
     </typeAliases>
     
     <environments default="development">
@@ -35,5 +36,6 @@
     <mappers>
     	<mapper resource="com/dianping/cosmos/hive/server/store/persistence/QueryHistoryMapper.xml"/>
     	<mapper resource="com/dianping/cosmos/hive/server/store/persistence/UserLoginMapper.xml"/>
+    	<mapper resource="com/dianping/cosmos/hive/server/store/persistence/QueryFavoriteMapper.xml"/>
     </mappers>
 </configuration>

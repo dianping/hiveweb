@@ -29,5 +29,4 @@
 		<name>dfs.namenode.kerberos.principal</name>
 		<value>hadoop/test86.hadoop@DIANPING.COM</value>
 	</property>
-
 </configuration>

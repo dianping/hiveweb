@@ -151,6 +151,7 @@ public class Krb5Login {
 			login.login();
 		} catch (LoginException e) {
 			e.printStackTrace();
+			return null;
 		}
 		UserGroupInformation loginUser = new UserGroupInformation(subject);
 		// loginUser.setLogin(login);
@@ -234,7 +235,8 @@ public class Krb5Login {
 		conf.set("hadoop.security.authentication", "kerberos");
 		// UserGroupInformation.setConfiguration(conf);
 		try {
-			Krb5Login.getVerifiedConnection("searchcron", "searchcron");
+			Krb5Login.getVerifiedConnection("searchcron", "11");
+			System.out.println("111111111111111");
 			// Krb5Login.chech("yukang.chen@DIANPING.COM", "yukang.chen");
 			// Krb5Login.check1();
 			// Krb5Login.verifyPassword("yukang.chen@DIANPING.COM",

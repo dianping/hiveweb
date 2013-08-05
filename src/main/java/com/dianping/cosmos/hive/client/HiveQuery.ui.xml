@@ -10,14 +10,12 @@
 			white-space: nowrap;
 		}
 		.hqlTextArea {
-			color: #942727;
-			font-weight: bold;
-			width: 700px;
-			height: 250px;
+			width: 850px;
+			height: 450px;
 			padding: 3px;
 			border: 3px solid #ccc;
 			border-top: 1px solid #666;
-			font-size: 130%;
+			font-size: 120%;
 			font-family: Tahoma, "Microsoft Yahei", Helvetica;
 			background-color: oldlace;
 		}
@@ -25,26 +23,33 @@
 		.progressTextArea {
 			color: #3B4CC7;
 			background-color: #EDFAEC;
-			width: 300px;
-			height: 250px;
+			width: 350px;
+			height: 450px;
 		}
 	</ui:style>
 	<g:VerticalPanel spacing='3'>
 		<g:VerticalPanel width="100%" spacing='3'>
 			<g:HorizontalPanel>
-				<g:HTMLPanel>Databases:</g:HTMLPanel>
+				<g:HTMLPanel><big>数据库:</big></g:HTMLPanel>
 				<g:ListBox ui:field="dbListBox" visibleItemCount="1" />
+				<g:HTMLPanel><big>执行引擎:</big></g:HTMLPanel>
+				<g:ListBox ui:field="engineListBox" visibleItemCount="1" />
+				<g:HTMLPanel>&nbsp;&nbsp;&nbsp;&nbsp;<big>收藏语句:</big></g:HTMLPanel>
+				<g:ListBox ui:field="queryFavoriteListBox" visibleItemCount="1" />
 			</g:HorizontalPanel>
-			<g:HTMLPanel>Please write your hive query:</g:HTMLPanel>
+			<g:HTMLPanel>请填写查询语句:</g:HTMLPanel>
 			<g:HorizontalPanel spacing="3">
 				<g:TextArea ui:field="hqlTextArea" styleName="{style.hqlTextArea}" />
-				<g:TextArea ui:field="progressTextArea" text="Query Plan"
+				<g:TextArea ui:field="progressTextArea" text="执行计划信息"
 					styleName="{style.progressTextArea}"/>
 			</g:HorizontalPanel>
 			<g:HorizontalPanel spacing='3'>
-				<g:CheckBox ui:field="isStoreFile" text="Store To File" />
-				<g:Button ui:field="submitBut" text="Submit" width="120px" />
-				<g:Button ui:field="submitQPBut" text="Query Plan" width="120px" />
+				<g:CheckBox ui:field="isStoreFile" text="保存查询结果" />
+				<g:ListBox ui:field="saveRecordsListBox" visibleItemCount="1" />
+				<g:Button ui:field="submitBut" text="提交" width="120px" />
+				<g:Button ui:field="submitQPBut" text="执行计划" width="120px" />
+				<g:Button ui:field="killQueryBut" text="停止查询" width="120px" />
+				<g:Button ui:field="saveQuery" text="查询另存为" width="120px" />
 			</g:HorizontalPanel>
 		</g:VerticalPanel>
 		<g:VerticalPanel width="100%">

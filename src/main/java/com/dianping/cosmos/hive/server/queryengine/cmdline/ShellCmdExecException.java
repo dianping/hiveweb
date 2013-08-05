@@ -7,5 +7,9 @@ public class ShellCmdExecException extends Exception{
 	public ShellCmdExecException(Throwable e){
 		super(e);
 	}
+	
+	public ShellCmdExecException(String e){
+		super(e);
+	}
 
 }

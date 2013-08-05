@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.dianping.cosmos.hive.server.queryengine.jdbc.HiveJdbcClient;
+import com.google.common.collect.ImmutableSet;
 
 public class Logout extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -38,8 +39,8 @@ public class Logout extends HttpServlet {
 							logger.debug("start to remove tokenid from tokenCache and ugi cache. tokenid:"
 									+ tokenid);
 						}
-						
-						LoginServiceImpl.tokenCache.invalidate(tokenid);
+
+						LoginServiceImpl.getTokenCache().invalidate(tokenid);
 						HiveJdbcClient.removeUgiByTokenid(tokenid);
 					}
 					c.setMaxAge(0);
@@ -47,6 +48,6 @@ public class Logout extends HttpServlet {
 				}
 			}
 		}
-		response.sendRedirect("index.html");
+		response.sendRedirect("http://data.dp/pluto/acl2hive.html");
 	}
 }

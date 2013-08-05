@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.dianping.cosmos.hive.server.store.persistence.QueryFavoriteMapper">
+	
+	<resultMap type="QueryFavorite" id="QueryFavoriteResultMap">
+		<result property="username" column="username" />
+		<result property="queryName" column="queryname" />
+		<result property="hql" column="hql" />
+		<result property="addtime" column="addtime" />
+	</resultMap>
+
+	<select id="selectQueryFavoriteByUsername" parameterType="String"
+		resultMap="QueryFavoriteResultMap">
+		<![CDATA[
+		SELECT username, queryname, hql, addtime 
+		FROM HW_QueryFavorite
+		WHERE username = #{username} 
+		ORDER BY ADDTIME DESC
+		]]>
+	</select>
+
+	<insert id="insertQueryFavorite" parameterType="QueryFavorite">
+	    <![CDATA[
+	    REPLACE INTO HW_QueryFavorite (username, queryname, hql, addtime)
+			VALUES (#{username}, #{queryName}, #{hql}, #{addtime})
+		]]>
+	</insert>
+</mapper>

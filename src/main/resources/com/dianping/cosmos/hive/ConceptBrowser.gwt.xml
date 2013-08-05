@@ -4,6 +4,11 @@
 	<inherits name='com.google.gwt.user.theme.standard.Standard' />
 	<inherits name='org.gwtmultipage.gwtmultipage' />
 	<inherits name="com.google.gwt.i18n.I18N" />
+	<inherits name="com.google.gwt.logging.Logging"/>
+	<!-- Include GWTUpload library -->
+  	<inherits name="gwtupload.GWTUpload"/>
+  	<!-- Load dinamically predefined styles in the library when the application starts -->
+  	<stylesheet src="Upload.css"/>
 
 	<!-- Use this EntryPoint instead of your own one. -->
 	<entry-point class='org.gwtmultipage.client.EntrypointDispatcher' />
@@ -11,6 +16,10 @@
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />
 	<source path='shared' />
+	
+	<set-property name="gwt.logging.logLevel" value="SEVERE"/>          
+  	<set-property name="gwt.logging.enabled" value="TRUE"/>            
+  	<set-property name="gwt.logging.popupHandler" value="DISABLED" />
 
 	<extend-property name="locale" values="en" />
 </module>

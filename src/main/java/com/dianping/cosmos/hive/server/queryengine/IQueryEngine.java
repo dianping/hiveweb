@@ -1,11 +1,17 @@
 package com.dianping.cosmos.hive.server.queryengine;
 
+import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
+import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
+
 public interface IQueryEngine {
 	
+	@Deprecated
 	public HiveQueryOutput getQueryResult(HiveQueryInput input);
 	
-	public String getQueryStatus(String username, long timestamp);
+	public HiveQueryOutputBo getQueryResult(HiveQueryInputBo input);
 	
-	public void stopQuery(String username, long timestamp);
+	public String getQueryStatus(String queryId);
+	
+	public Boolean stopQuery(String queryId);
 	
 }

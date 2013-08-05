@@ -2,7 +2,7 @@ package com.dianping.cosmos.hive.client.bo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TableSchemaBo implements IsSerializable {
+public class FieldSchemaBo implements IsSerializable {
 	private String fieldName;
 	private String fieldType;
 	private String fieldComment;
@@ -28,8 +28,7 @@ public class TableSchemaBo implements IsSerializable {
 	
 	@Override
 	public String toString() {
-		return "TableSchemaBo [fieldName=" + fieldName + ", fieldType="
+		return "FieldSchemaBo [fieldName=" + fieldName + ", fieldType="
 				+ fieldType + ", fieldComment=" + fieldComment + "]";
 	}
-
 }

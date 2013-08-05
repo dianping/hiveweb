@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.gwtmultipage.client.UrlPatternEntryPoint;
 
-import com.dianping.cosmos.hive.client.bo.TableSchemaBo;
+import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.dianping.cosmos.hive.client.css.TableResources;
 import com.dianping.cosmos.hive.client.service.HiveQueryServiceAsync;
 import com.dianping.cosmos.hive.client.service.LoginServiceAsync;
@@ -19,6 +19,7 @@ import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -36,8 +37,10 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	ListBox dbListBox;
 	@UiField
 	ListBox tableListBox;
+	@UiField
+	Label tableNameLabel;
 	@UiField(provided = true)
-	CellTable<TableSchemaBo> tableSchemaTable;
+	CellTable<FieldSchemaBo> tableSchemaTable;
 	@UiField
 	TextArea tableDetail;
 
@@ -83,35 +86,35 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 	}
 
 	private void initialize() {
-		tableSchemaTable = new CellTable<TableSchemaBo>(15,
+		tableSchemaTable = new CellTable<FieldSchemaBo>(15,
 				GWT.<TableResources> create(TableResources.class));
 		tableSchemaTable
 				.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
-		TextColumn<TableSchemaBo> fieldNameColumn = new TextColumn<TableSchemaBo>() {
+		TextColumn<FieldSchemaBo> fieldNameColumn = new TextColumn<FieldSchemaBo>() {
 			@Override
-			public String getValue(TableSchemaBo ts) {
+			public String getValue(FieldSchemaBo ts) {
 				return ts.getFieldName();
 			}
 		};
-		tableSchemaTable.addColumn(fieldNameColumn, "Field Name");
+		tableSchemaTable.addColumn(fieldNameColumn, "字段名");
 
-		TextColumn<TableSchemaBo> fieldTypeColumn = new TextColumn<TableSchemaBo>() {
+		TextColumn<FieldSchemaBo> fieldTypeColumn = new TextColumn<FieldSchemaBo>() {
 
 			@Override
-			public String getValue(TableSchemaBo ts) {
+			public String getValue(FieldSchemaBo ts) {
 				return ts.getFieldType();
 			}
 		};
-		tableSchemaTable.addColumn(fieldTypeColumn, "Field Type");
+		tableSchemaTable.addColumn(fieldTypeColumn, "字段类型");
 
-		TextColumn<TableSchemaBo> fieldCommentColumn = new TextColumn<TableSchemaBo>() {
+		TextColumn<FieldSchemaBo> fieldCommentColumn = new TextColumn<FieldSchemaBo>() {
 
 			@Override
-			public String getValue(TableSchemaBo ts) {
+			public String getValue(FieldSchemaBo ts) {
 				return ts.getFieldComment();
 			}
 		};
-		tableSchemaTable.addColumn(fieldCommentColumn, "Field Comment");
+		tableSchemaTable.addColumn(fieldCommentColumn, "字段注释");
 	}
 
 	private void bind() {
@@ -149,12 +152,15 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 			
 			@Override
 			public void onChange(ChangeEvent event) {
-				getTableSchema();
+				String dbName = dbListBox.getValue(dbListBox.getSelectedIndex());
+				String tableName = tableListBox.getValue(tableListBox.getSelectedIndex());
+				tableNameLabel.setText(dbName + "." + tableName);
+				getTableSchema(dbName, tableName);
 			}
 		});
 	}
 
-	private void getTables(String dbname) {
+	private void getTables(final String dbname) {
 		if (dbname == null || dbname.equals("")) {
 			return;
 		} else {
@@ -166,9 +172,15 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 							tableListBox.clear();
 							tables = result;
 							for (int i = 0; i < tables.size(); i++) {
+								if (i == 0) {
+									tableNameLabel.setText(dbname + "." + tables.get(i));
+								}
+								
 								tableListBox.addItem(tables.get(i));
 							}
-							getTableSchema();
+							String dbName = dbListBox.getValue(dbListBox.getSelectedIndex());
+							String tableName = tableListBox.getValue(tableListBox.getSelectedIndex());
+							getTableSchema(dbName, tableName);
 						}
 
 						@Override
@@ -179,16 +191,13 @@ public class TableSchema extends LoginComponent implements EntryPoint {
 		}
 	}
 
-	private void getTableSchema() {
-		final String dbName = dbListBox.getValue(dbListBox.getSelectedIndex());
-		final String tableName = tableListBox.getValue(tableListBox
-				.getSelectedIndex());
+	private void getTableSchema(final String  dbName, final String tableName) {
 		if (!dbName.equals("") && !tableName.equals("")) {
 			hiveQueryService.getTableSchema(getTokenid(), dbName, tableName,
-					new AsyncCallback<List<TableSchemaBo>>() {
+					new AsyncCallback<List<FieldSchemaBo>>() {
 
 						@Override
-						public void onSuccess(List<TableSchemaBo> result) {
+						public void onSuccess(List<FieldSchemaBo> result) {
 							if (result != null && result.size() > 0){
 								hiveQueryService.getTableSchemaDetail(getTokenid(), dbName, tableName,
 										new AsyncCallback<String>() {

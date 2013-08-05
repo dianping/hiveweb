@@ -92,7 +92,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				return o.getUsername();
 			}
 		};
-		cellTable.addColumn(usernameColumn, "User Name");
+		cellTable.addColumn(usernameColumn, "用户名");
 
 		DateTimeFormat dateFormat = DateTimeFormat
 				.getFormat(PredefinedFormat.DATE_TIME_MEDIUM);
@@ -105,7 +105,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 			}
 
 		};
-		cellTable.addColumn(addtimeColumn, "Add Time");
+		cellTable.addColumn(addtimeColumn, "查询时间");
 
 		TextColumn<QueryHistoryBo> hqlColumn = new TextColumn<QueryHistoryBo>() {
 			@Override
@@ -113,7 +113,23 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				return o.getHql();
 			}
 		};
-		cellTable.addColumn(hqlColumn, "Hive Query");
+		cellTable.addColumn(hqlColumn, "查询语句");
+		
+		TextColumn<QueryHistoryBo> modeColumn = new TextColumn<QueryHistoryBo>() {
+			@Override
+			public String getValue(QueryHistoryBo o) {
+				return o.getMode();
+			}
+		};
+		cellTable.addColumn(modeColumn, "查询方式");
+		
+		TextColumn<QueryHistoryBo> exectimeColumn = new TextColumn<QueryHistoryBo>() {
+			@Override
+			public String getValue(QueryHistoryBo o) {
+				return String.valueOf(o.getExectime());
+			}
+		};
+		cellTable.addColumn(exectimeColumn, "运行时间");
 
 		ButtonCell downloadButton = new ButtonCell();
 		Column<QueryHistoryBo, String> downloadColumn = new Column<QueryHistoryBo, String>(
@@ -122,9 +138,9 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				String fileLocation = o.getFilename();
 
 				if (fileLocation == null || fileLocation.equals("")) {
-					return "Not Store";
+					return "未保存";
 				} else {
-					return "Download";
+					return "下载";
 				}
 			}
 		};
@@ -136,22 +152,22 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 							String value) {
 						String fileLocation = object.getFilename();
 						GWT.log("Downloading " + fileLocation);
-						if (fileLocation != null
-								&& fileLocation.indexOf('/') > 0) {
-							String fileName = fileLocation
-									.substring(fileLocation.lastIndexOf('/') + 1);
-							String link = GWT.getModuleBaseURL()
-									+ "myfiledownload/" + fileName;
-							Window.open(link, "_blank", "");
-						}
+						String fileName = fileLocation.substring(fileLocation
+								.lastIndexOf('/') + 1);
+						String link = GWT.getModuleBaseURL()
+								+ "myfiledownload/" + fileName;
+						Window.open(link, "_blank", "");
 					}
 				});
-		cellTable.addColumn(downloadColumn, "Download File");
+		cellTable.addColumn(downloadColumn, "下载结果文件");
 
 		cellTable.setColumnWidth(usernameColumn, "10%");
-		cellTable.setColumnWidth(addtimeColumn, "15%");
-		cellTable.setColumnWidth(hqlColumn, "65%");
-		cellTable.setColumnWidth(downloadColumn, "10%");
+		cellTable.setColumnWidth(addtimeColumn, "10%");
+		cellTable.setColumnWidth(modeColumn, "10%");
+		cellTable.setColumnWidth(exectimeColumn, "10%");
+		cellTable.setColumnWidth(hqlColumn, "45%");
+		
+		cellTable.setColumnWidth(downloadColumn, "15%");
 
 		SimplePager.Resources pagerResources = GWT
 				.create(SimplePager.Resources.class);
@@ -161,7 +177,7 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 	}
 
 	private void bind() {
-		hiveQueryService.getQueryHistory(getUsername(),
+		hiveQueryService.getQueryHistory(getRealuser(),
 				new AsyncCallback<List<QueryHistoryBo>>() {
 
 					@Override
@@ -176,8 +192,8 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 										+ display.getVisibleRange().getLength();
 								end = end >= result.size() ? result.size()
 										: end;
-								List<QueryHistoryBo> sub = result
-										.subList(start, end);
+								List<QueryHistoryBo> sub = result.subList(
+										start, end);
 								updateRowData(start, sub);
 							}
 						};
@@ -193,8 +209,9 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 				});
 
 	}
-	
-	public void initQueryHistoryList(AsyncDataProvider<QueryHistoryBo> dataProvider) {
+
+	public void initQueryHistoryList(
+			AsyncDataProvider<QueryHistoryBo> dataProvider) {
 		dataProvider.addDataDisplay(cellTable);
 	}
 

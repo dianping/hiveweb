@@ -1,6 +1,7 @@
 package com.dianping.cosmos.hive.server.queryengine.jdbc;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
@@ -23,19 +24,26 @@ import org.apache.hadoop.util.ReflectionUtils;
 public class DataFileStore {
 	private static final Log logger = LogFactory.getLog(DataFileStore.class);
 
-	private static int DEFAULT_FILE_STORE_LINE_LIMIT = 10000;
+	public final static int DEFAULT_FILE_STORE_LINE_LIMIT = 100000;
 	private static DataFileStore instance;
 
-	public static String FILE_STORE_DIRECTORY_LOCATION;
-	public static int FILE_STORE_LINE_LIMIT;
+	public final static String FILE_STORE_DIRECTORY_LOCATION;
+	public final static String QUERY_STATUS_LOCATION;
+	public final static String UPLOAD_DIR_LOCATION;
+	public final static int FILE_STORE_LINE_LIMIT;
 	public final static String DEFAULT_CODEC_CLASS = "org.apache.hadoop.io.compress.GzipCodec";
 	public final static int BUFFER_SIZE = 8 * 1024;
-	private final static String ENCODING = "UTF-8";
+	public final static String ENCODING = "utf-8";
+	public final static String FILE_EXTENSION = "xls.gz";
 
 	static {
 		ResourceBundle bundle = ResourceBundle.getBundle("context");
 		FILE_STORE_DIRECTORY_LOCATION = bundle
 				.getString("hive-web.store.data.location");
+		QUERY_STATUS_LOCATION = bundle
+				.getString("hive-web.store.query.status.location");
+		UPLOAD_DIR_LOCATION = bundle
+				.getString("hive-web.store.upload.location");
 		FILE_STORE_LINE_LIMIT = tryParseInt(
 				bundle.getString("hive-web.store.data.file.line.limit"),
 				DEFAULT_FILE_STORE_LINE_LIMIT);
@@ -43,10 +51,19 @@ public class DataFileStore {
 
 	public static DataFileStore getInstance() {
 		if (instance == null) {
-			instance = new DataFileStore();
-			logger.info("initialize DataFileStore, FILE_STORE_DIRECTORY_LOCATION is "
-					+ FILE_STORE_DIRECTORY_LOCATION
-					+ " FILE_STORE_LINE_LIMIT is " + FILE_STORE_LINE_LIMIT);
+			synchronized (DataFileStore.class) {
+				if (instance == null) {
+					instance = new DataFileStore();
+					logger.info("initialize DataFileStore, FILE_STORE_DIRECTORY_LOCATION is "
+							+ FILE_STORE_DIRECTORY_LOCATION
+							+ " FILE_STORE_LINE_LIMIT is "
+							+ FILE_STORE_LINE_LIMIT
+							+ " QUERY_STATUS_LOCATION is "
+							+ QUERY_STATUS_LOCATION
+							+ " UPLOAD_DIR_LOCATION"
+							+ UPLOAD_DIR_LOCATION);
+				}
+			}
 		}
 		return instance;
 	}
@@ -64,7 +81,7 @@ public class DataFileStore {
 	}
 
 	public static BufferedWriter openOutputStream(String file)
-			throws IOException{
+			throws IOException {
 		Configuration conf = new Configuration();
 		URI uri = null;
 		try {
@@ -80,24 +97,38 @@ public class DataFileStore {
 		} catch (ClassNotFoundException e) {
 			logger.error(DEFAULT_CODEC_CLASS + " not found", e);
 		}
-		CompressionCodec codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass, conf);
-		
-		if (logger.isDebugEnabled()){
-			logger.debug("reflection using compression codec class: " + codec.getClass().getName());
+		CompressionCodec codec = (CompressionCodec) ReflectionUtils
+				.newInstance(codecClass, conf);
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("reflection using compression codec class: "
+					+ codec.getClass().getName());
 		}
 		FSDataOutputStream out = fs.create(new Path(file), false, BUFFER_SIZE);
 		CompressionOutputStream co = codec.createOutputStream(out);
-		BufferedWriter bw = new BufferedWriter(
-				new OutputStreamWriter(co, ENCODING), BUFFER_SIZE);
-		
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(co,
+				ENCODING), BUFFER_SIZE);
+
 		return bw;
 	}
-	
-	public static String getStoreFilePath(String tokenid, String username,
-			String database, String hql, long timestamp){
-		String input = tokenid + username + database + hql + timestamp;
-		String md5 = getMD5Hash(input);
-		return String.format("%s/%s.gz", FILE_STORE_DIRECTORY_LOCATION, md5);
+
+	public static String getStoreFileAbsolutePath(String tokenid,
+			String username, String database, String hql, long timestamp,
+			String queryId) {
+		String fileName = getStoreFileName(tokenid, username, database, hql,
+				timestamp, queryId);
+		StringBuilder sb = new StringBuilder();
+		sb.append(FILE_STORE_DIRECTORY_LOCATION).append(File.separator)
+				.append(fileName).append(".").append(FILE_EXTENSION);
+		return sb.toString();
+	}
+
+	public static String getStoreFileName(String tokenid, String username,
+			String database, String hql, long timestamp, String queryId) {
+		String input = tokenid + username + database + hql + timestamp
+				+ queryId;
+		String md5Filename = getMD5Hash(input);
+		return md5Filename;
 	}
 
 	private static String getMD5Hash(String input) {
