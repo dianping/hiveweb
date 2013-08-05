@@ -10,6 +10,8 @@ public class QueryHistory implements Serializable {
 	private String hql;
 	private Date addtime;
 	private String filename;
+	private String mode;
+	private long exectime;
 	
 	public String getUsername() {
 		return username;
@@ -36,10 +38,22 @@ public class QueryHistory implements Serializable {
 		this.filename = filename;
 	}
 	
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+	public String getMode() {
+		return mode;
+	}
+	public void setExectime(long exectime) {
+		this.exectime = exectime;
+	}
+	public long getExectime() {
+		return exectime;
+	}
+	
 	@Override
 	public String toString() {
 		return "QueryHistory [username=" + username + ", hql=" + hql
 				+ ", addtime=" + addtime + ", filename=" + filename + "]";
 	}
-	
 }

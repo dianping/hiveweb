@@ -9,6 +9,8 @@ public class QueryHistoryBo implements IsSerializable {
 	private String hql;
 	private Date addtime;
 	private String filename;
+	private String mode;
+	private long exectime;
 	
 	public String getUsername() {
 		return username;
@@ -35,6 +37,18 @@ public class QueryHistoryBo implements IsSerializable {
 		this.filename = filename;
 	}
 	
+	public String getMode() {
+		return mode;
+	}
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+	public long getExectime() {
+		return exectime;
+	}
+	public void setExectime(long exectime) {
+		this.exectime = exectime;
+	}
 	@Override
 	public String toString() {
 		return "QueryHistoryBo [username=" + username + ", hql=" + hql

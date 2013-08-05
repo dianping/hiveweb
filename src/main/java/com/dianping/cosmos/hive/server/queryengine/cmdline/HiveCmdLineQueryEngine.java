@@ -26,7 +26,6 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 	private static final String KILL_COMMAND_PREFIX = "Kill Command =";
 	private static final int KILL_COMMAND_PREFIX_LENGTH = KILL_COMMAND_PREFIX
 			.length();
-	private static final String SHARK_SETTINGS="set dfs.umaskmode=000;set fs.default.name=hdfs://10.2.6.143;";
 
 	@Override
 	public HiveQueryOutputBo getQueryResult(HiveQueryInputBo input) {
@@ -61,7 +60,7 @@ public class HiveCmdLineQueryEngine implements IQueryEngine {
 
 		String ticketCache = "/tmp/" + username + ".ticketcache"; 
 		if (engineMode.equals("shark")) {
-			hiveCmd = SHARK_SETTINGS + hiveCmd;
+			engineMode = "shark-witherror";
 		}
 		
 		String cmd = joinString("bash -c \"",

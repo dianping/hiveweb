@@ -13,7 +13,7 @@
 
 	<select id="selectQueryHistoryByUsername" parameterType="String"
 		resultType="QueryHistory">
-		select username, hql, addtime, filename from
+		select username, hql, addtime, filename, mode, exectime from
 		HW_QueryHistory where username = #{username} order by id desc
     </select>
     
@@ -24,8 +24,8 @@
 	<insert id="insertQueryHistory"
 		parameterType="QueryHistory">
 	    <![CDATA[
-	    INSERT INTO HW_QueryHistory (username, hql, addtime, filename)
-			VALUES (#{username}, #{hql}, #{addtime}, #{filename})
+	    INSERT INTO HW_QueryHistory (username, hql, addtime, filename, mode, exectime)
+			VALUES (#{username}, #{hql}, #{addtime}, #{filename}, #{mode}, #{exectime})
 		]]>
 	</insert>
 </mapper>

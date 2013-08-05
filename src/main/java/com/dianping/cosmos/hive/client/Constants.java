@@ -14,6 +14,8 @@ public final class Constants {
 		ALLOWED_USER.add("ming.fang");
 		ALLOWED_USER.add("erik.fang");
 		ALLOWED_USER.add("guangbin.zhu");
+		ALLOWED_USER.add("yifan.cao");
+		ALLOWED_USER.add("ben.lin");
 		
 		ALLOWED_GROUP.add("dataday_present");
 		ALLOWED_GROUP.add("ba");

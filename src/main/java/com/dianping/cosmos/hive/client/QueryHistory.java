@@ -114,6 +114,22 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 			}
 		};
 		cellTable.addColumn(hqlColumn, "查询语句");
+		
+		TextColumn<QueryHistoryBo> modeColumn = new TextColumn<QueryHistoryBo>() {
+			@Override
+			public String getValue(QueryHistoryBo o) {
+				return o.getMode();
+			}
+		};
+		cellTable.addColumn(modeColumn, "查询方式");
+		
+		TextColumn<QueryHistoryBo> exectimeColumn = new TextColumn<QueryHistoryBo>() {
+			@Override
+			public String getValue(QueryHistoryBo o) {
+				return String.valueOf(o.getExectime());
+			}
+		};
+		cellTable.addColumn(exectimeColumn, "运行时间");
 
 		ButtonCell downloadButton = new ButtonCell();
 		Column<QueryHistoryBo, String> downloadColumn = new Column<QueryHistoryBo, String>(
@@ -146,8 +162,11 @@ public class QueryHistory extends LoginComponent implements EntryPoint {
 		cellTable.addColumn(downloadColumn, "下载结果文件");
 
 		cellTable.setColumnWidth(usernameColumn, "10%");
-		cellTable.setColumnWidth(addtimeColumn, "15%");
-		cellTable.setColumnWidth(hqlColumn, "60%");
+		cellTable.setColumnWidth(addtimeColumn, "10%");
+		cellTable.setColumnWidth(modeColumn, "10%");
+		cellTable.setColumnWidth(exectimeColumn, "10%");
+		cellTable.setColumnWidth(hqlColumn, "45%");
+		
 		cellTable.setColumnWidth(downloadColumn, "15%");
 
 		SimplePager.Resources pagerResources = GWT

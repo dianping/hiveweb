@@ -89,6 +89,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		input.setResultLocation(resultLocation);
 
 		HiveQueryOutputBo output = null;
+		long startTime = System.currentTimeMillis();
 		if (queryEngine instanceof JdbcQueryEngine) {
 			output = queryEngine.getQueryResult(input);
 		} else if (queryEngine instanceof HiveCmdLineQueryEngine) {
@@ -97,6 +98,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 			logger.error("No such queryEngine implemented "
 					+ queryEngine.getClass());
 		}
+		long duration = (System.currentTimeMillis() - startTime) / 1000;
 
 		if (output != null && output.getSuccess() == true) {
 			// insert query history DB
@@ -110,6 +112,8 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 			history.setUsername(input.getRealuser());
 			history.setAddtime(new Date(input.getTimestamp()));
 			history.setFilename(resultFileLocation);
+			history.setMode(input.getEngineMode());
+			history.setExectime(duration);
 			queryHistoryService.insertQueryHistory(history);
 		}
 		return output;
@@ -155,7 +159,8 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 			o.setAddtime(qh.getAddtime());
 			o.setHql(qh.getHql());
 			o.setFilename(qh.getFilename());
-
+			o.setMode(qh.getMode());
+			o.setExectime(qh.getExectime());
 			qhbs.add(o);
 		}
 		return qhbs;
