@@ -2,11 +2,15 @@ package com.dianping.cosmos.hive.server.mail;
 
 import javax.mail.internet.MimeMessage.RecipientType;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codemonkey.simplejavamail.Email;
 import org.codemonkey.simplejavamail.MailException;
 import org.codemonkey.simplejavamail.Mailer;
 
 public class MailService {
+	private static final Log LOG = LogFactory.getLog(MailService.class);
+	
 	private String fromAddress;
 	private String subject;
 	private String recipient;
@@ -18,7 +22,10 @@ public class MailService {
 		final Email email = new Email();
 		email.setFromAddress(fromAddress, fromAddress);
 		email.setSubject(subject);
-		email.addRecipient(recipient, recipient, RecipientType.TO);
+		String[] recipients = recipient.split(",");
+		for (String r : recipients) {
+			email.addRecipient(r, r, RecipientType.TO);
+		}
 		email.setText(body);
 		try {
 			new Mailer(host, 25, username, password).sendMail(email);

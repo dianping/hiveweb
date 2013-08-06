@@ -20,6 +20,6 @@ public final class Constants {
 		ALLOWED_GROUP.add("dataday_present");
 		ALLOWED_GROUP.add("ba");
 		ALLOWED_GROUP.add("ba1");
+		ALLOWED_GROUP.add("online_report");
 	}
-
 }
