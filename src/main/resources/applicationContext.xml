@@ -42,4 +42,13 @@
 		class="com.dianping.cosmos.hive.server.queryengine.cmdline.HiveCmdLineQueryEngine" />
 	<bean id="JdbcQueryEngine"
 		class="com.dianping.cosmos.hive.server.queryengine.jdbc.JdbcQueryEngine" />
+
+	<bean id="MailService" class="com.dianping.cosmos.hive.server.mail.MailService">
+		<property name="fromAddress" value="info@51ping.com"></property>
+		<property name="subject" value="Hive Query Bug"></property>
+		<property name="recipient" value="bigdatape@dianping.com"></property>
+		<property name="host" value="mail.51ping.com"></property>
+		<property name="username" value="info"></property>
+		<property name="password" value="chinese1"></property>
+	</bean>
 </beans>

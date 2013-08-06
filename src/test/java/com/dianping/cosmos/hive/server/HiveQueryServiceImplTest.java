@@ -1,6 +1,7 @@
 package com.dianping.cosmos.hive.server;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.dianping.cosmos.hive.server.mail.MailService;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
 import com.dianping.cosmos.hive.server.store.service.QueryHistoryService;
 import com.google.common.cache.Cache;
@@ -25,6 +27,9 @@ public class HiveQueryServiceImplTest {
 	private QueryHistoryService queryHistoryService;
 	
 	@Autowired
+	private MailService mailService;
+	
+	@Autowired
 	@Qualifier("HiveCmdLineQueryEngine")
 	private IQueryEngine queryEngine;
 
@@ -32,6 +37,7 @@ public class HiveQueryServiceImplTest {
 	public void testGetDatabases() {
 		assertNotNull(queryHistoryService);
 		assertNotNull(queryEngine);
+		assertNotNull(mailService);
 		
 		Cache<String, Date> graphs = CacheBuilder.newBuilder().concurrencyLevel(4).weakKeys().maximumSize(10000)
 		.expireAfterWrite(3, TimeUnit.SECONDS).build();
@@ -48,9 +54,11 @@ public class HiveQueryServiceImplTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+	}
+	
+	@Test
+	public void testSendMail() {
+		assertEquals(true, mailService.sendMail("this is a test mail, please ignore it!"));
 	}
 
 }

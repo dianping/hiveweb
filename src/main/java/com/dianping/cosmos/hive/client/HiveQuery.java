@@ -10,6 +10,7 @@ import org.gwtmultipage.client.UrlPatternEntryPoint;
 
 import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
+import com.dianping.cosmos.hive.client.bo.QueryErrorBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.css.TableResources;
 import com.dianping.cosmos.hive.client.service.HiveQueryServiceAsync;
@@ -86,6 +87,8 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 	Button killQueryBut;
 	@UiField
 	Button saveQuery;
+	@UiField
+	Button submitError;
 
 	private Map<String, String> queryFavoriteMap = new HashMap<String, String>();
 	private List<String[]> data = new ArrayList<String[]>();
@@ -233,6 +236,36 @@ public class HiveQuery extends LoginComponent implements EntryPoint {
 				@Override
 				public void onFailure(Throwable caught) {
 					Window.alert("停止查询失败");
+				}
+			});
+		}
+	}
+
+	@UiHandler("submitError")
+	void submitQueryError(ClickEvent e) {
+		if (hqlTextArea.getValue().trim().equals("")) {
+			Window.alert("输入框不能空");
+		} else {
+			QueryErrorBo qe = new QueryErrorBo();
+			qe.setMode(engineListBox.getItemText(engineListBox
+					.getSelectedIndex()));
+			qe.setUsername(getRealuser());
+			qe.setSql(hqlTextArea.getValue().trim());
+			qe.setStatus(progressTextArea.getValue().trim());
+			hiveQueryService.submitQueryError(qe, new AsyncCallback<Boolean>() {
+
+				@Override
+				public void onSuccess(Boolean result) {
+					if (result == true) {
+						Window.alert("提交错误成功");
+					} else {
+						Window.alert("提交错误失败");
+					}
+				}
+
+				@Override
+				public void onFailure(Throwable caught) {
+					Window.alert("提交错误失败" + caught.toString());
 				}
 			});
 		}

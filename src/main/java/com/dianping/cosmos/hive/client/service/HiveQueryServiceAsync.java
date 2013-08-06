@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
+import com.dianping.cosmos.hive.client.bo.QueryErrorBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
 import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
@@ -39,6 +40,8 @@ public interface HiveQueryServiceAsync {
 	public void createTable(String tokenid, String hql, AsyncCallback<ResultStatusBo> callback);
 	
 	public void uploadTableFile(String tokenid, String username, String dbname, String tablename, String filelocation, Boolean overwrite , String partionCond, AsyncCallback<ResultStatusBo> callback);
+	
+	public void submitQueryError(QueryErrorBo error, AsyncCallback<Boolean> callback);
 	
 	public static final class Util {
 		private static HiveQueryServiceAsync instance;

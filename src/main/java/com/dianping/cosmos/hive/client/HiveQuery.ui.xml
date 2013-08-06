@@ -50,6 +50,7 @@
 				<g:Button ui:field="submitQPBut" text="执行计划" width="120px" />
 				<g:Button ui:field="killQueryBut" text="停止查询" width="120px" />
 				<g:Button ui:field="saveQuery" text="查询另存为" width="120px" />
+				<g:Button ui:field="submitError" text="一健报错" width="120px" />
 			</g:HorizontalPanel>
 		</g:VerticalPanel>
 		<g:VerticalPanel width="100%">

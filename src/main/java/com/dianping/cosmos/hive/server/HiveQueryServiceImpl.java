@@ -18,10 +18,12 @@ import org.springframework.stereotype.Service;
 import com.dianping.cosmos.hive.client.bo.FieldSchemaBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryInputBo;
 import com.dianping.cosmos.hive.client.bo.HiveQueryOutputBo;
+import com.dianping.cosmos.hive.client.bo.QueryErrorBo;
 import com.dianping.cosmos.hive.client.bo.QueryFavoriteBo;
 import com.dianping.cosmos.hive.client.bo.QueryHistoryBo;
 import com.dianping.cosmos.hive.client.bo.ResultStatusBo;
 import com.dianping.cosmos.hive.client.service.HiveQueryService;
+import com.dianping.cosmos.hive.server.mail.MailService;
 import com.dianping.cosmos.hive.server.queryengine.IQueryEngine;
 import com.dianping.cosmos.hive.server.queryengine.cmdline.HiveCmdLineQueryEngine;
 import com.dianping.cosmos.hive.server.queryengine.jdbc.DataFileStore;
@@ -38,7 +40,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @Service("HiveQuery")
 public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		HiveQueryService {
-	private static final Log logger = LogFactory
+	private static final Log LOG = LogFactory
 			.getLog(HiveQueryServiceImpl.class);
 
 	@Autowired
@@ -54,6 +56,9 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 	@Autowired
 	private HiveJdbcClient hiveJdbcClient;
 
+	@Autowired
+	private MailService mailService;
+
 	@Override
 	public List<String> getDatabases(String tokenid) {
 
@@ -64,9 +69,9 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 	public List<String> getLatestNQuery() {
 		List<String> hqls = queryHistoryService.selectLastNQuery();
 
-		if (logger.isDebugEnabled()) {
+		if (LOG.isDebugEnabled()) {
 			for (String string : hqls) {
-				logger.debug(string);
+				LOG.debug(string);
 			}
 		}
 
@@ -95,7 +100,7 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		} else if (queryEngine instanceof HiveCmdLineQueryEngine) {
 			output = queryEngine.getQueryResult(input);
 		} else {
-			logger.error("No such queryEngine implemented "
+			LOG.error("No such queryEngine implemented "
 					+ queryEngine.getClass());
 		}
 		long duration = (System.currentTimeMillis() - startTime) / 1000;
@@ -228,13 +233,13 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 		String hiveQueryCmd = "hive -e \"" + sb.toString() + "\"";
 		String[] shellCmd = { "bash", "-c", exportKRB5Cmd + ";" + hiveQueryCmd };
 
-		logger.info("exec load data command:" + StringUtils.join(shellCmd, " "));
+		LOG.info("exec load data command:" + StringUtils.join(shellCmd, " "));
 		ShellCommandExecutor shExec = new ShellCommandExecutor(shellCmd);
 
 		try {
 			shExec.execute();
 		} catch (IOException e) {
-			logger.error("Error while uploading file : " + filelocation
+			LOG.error("Error while uploading file : " + filelocation
 					+ ", command:" + shellCmd + " , Exception: "
 					+ e.getMessage());
 			rs.setSuccess(false);
@@ -245,5 +250,16 @@ public class HiveQueryServiceImpl extends RemoteServiceServlet implements
 			FileUtils.deleteQuietly(new File(filelocation));
 		}
 		return rs;
+	}
+
+	@Override
+	public Boolean submitQueryError(QueryErrorBo error) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("username: \n").append(error.getUsername()).append("\n\n");
+		sb.append("mode: \n").append(error.getMode()).append("\n\n");
+		sb.append("sql: \n").append(error.getSql()).append("\n\n");
+		sb.append("status: \n").append(error.getStatus());
+		LOG.info("send hive bug mail from user " + error.getUsername());
+		return mailService.sendMail(sb.toString());
 	}
 }
